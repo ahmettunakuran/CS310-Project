@@ -5,6 +5,8 @@ import 'screens/stock_information_screen.dart';
 import 'screens/barcode_scanner_screen.dart';
 import 'screens/add_item_screen.dart';
 import 'screens/inventory_screen.dart';
+import 'screens/delete_product_screen.dart';
+import 'screens/order_history_screen.dart';
 
 void main() {
   runApp(const StockStableApp());
@@ -30,6 +32,9 @@ class StockStableApp extends StatelessWidget {
         // TODO: OZAN: ProductDetailsScreen.dart oluşturup designladıktna sonra sağdaki navigasyonu buraya yapıştırılıcak -> '/prodcutDetails': (context) => const ProdcutDetailsScreen(),
         // TODO: TUNA: OrderHistoryScreen.dart oluşturup designladıktna sonra sağdaki navigasyonu buraya yapıştırılıcak -> '/orderHistory': (context) => const OrderHistoryScreen(),
         // TODO: TUNA: DeleteProductScreen.dart oluşturup designladıktna sonra sağdaki navigasyonu buraya yapıştırılıcak -> '/deleteProduct': (context) => const DeleteProductScreen(),
+        '/deleteItem' : (context )=>  DeleteProductScreen(),
+        '/deleteProduct' : (context )=>  InventoryScreen(),
+        '/orderHistory': (context) =>  OrderHistoryScreen(),
       },
     );
   }
