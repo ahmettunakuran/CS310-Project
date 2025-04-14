@@ -18,11 +18,6 @@ class InventoryScreenState extends State<InventoryScreen> {
   static List<Map<String, dynamic>> getProducts() => products;
 
 
-  void _removeProduct(int index) {
-    setState(() {
-      products.removeAt(index);
-    });
-  }
 
   void _showProductInfo(Map<String, dynamic> product) {
     showDialog(
@@ -71,7 +66,7 @@ class InventoryScreenState extends State<InventoryScreen> {
             Text('Amount: ${product['amount']}'),
             Text('Price: ₺${product['price']}'),
             ElevatedButton.icon(
-              onPressed: () => _removeProduct(index),
+              onPressed: (){ Navigator.pushNamed(context, '/deleteItem');},
               icon: const Icon(Icons.delete, size: 16),
               label: const Text('Delete'),
               style: ElevatedButton.styleFrom(

@@ -15,7 +15,7 @@ class ForgotPasswordScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 60),
             
-            // Sol üstteki home ikonu
+            
             Align(
               alignment: Alignment.centerLeft,
               child: IconButton(

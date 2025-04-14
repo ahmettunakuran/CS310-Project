@@ -15,7 +15,7 @@ class SignUpScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 60),
 
-            // Home ikonu → login sayfasına yönlendir
+            
             Align(
               alignment: Alignment.centerLeft,
               child: IconButton(

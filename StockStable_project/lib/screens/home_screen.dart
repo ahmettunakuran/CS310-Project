@@ -153,7 +153,7 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/deleteItem');
+                  Navigator.pushNamed(context, '/deleteProduct');
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),

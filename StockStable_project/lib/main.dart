@@ -36,9 +36,9 @@ class StockStableApp extends StatelessWidget {
         '/barcodeScanner': (context) => const BarcodeScannerScreen(),
         '/addItem': (context) => const AddItemScreen(),
         '/inventory': (context) => const InventoryScreen(),
-        '/deleteItem': (context) => const DeleteProductScreen(), // senin özel route’un
-        '/deleteProduct': (context) => const InventoryScreen(),   // dikkatli kullan
-        '/orderHistory': (context) => const OrderHistoryScreen(),
+        '/deleteItem': (context) =>  DeleteProductScreen(), 
+        '/deleteProduct': (context) => const InventoryScreen(),   
+        '/orderHistory': (context) =>  OrderHistoryScreen(),
 
         // TODO:
         // '/settings': (context) => const SettingsScreen(),
@@ -48,4 +48,3 @@ class StockStableApp extends StatelessWidget {
     );
   }
 }
-
