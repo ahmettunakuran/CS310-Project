@@ -33,6 +33,7 @@ class StockStableApp extends StatelessWidget {
         // TODO: TUNA: OrderHistoryScreen.dart oluşturup designladıktna sonra sağdaki navigasyonu buraya yapıştırılıcak -> '/orderHistory': (context) => const OrderHistoryScreen(),
         // TODO: TUNA: DeleteProductScreen.dart oluşturup designladıktna sonra sağdaki navigasyonu buraya yapıştırılıcak -> '/deleteProduct': (context) => const DeleteProductScreen(),
         '/deleteItem' : (context )=>  DeleteProductScreen(),
+        '/deleteProduct' : (context )=>  InventoryScreen(),
         '/orderHistory': (context) =>  OrderHistoryScreen(),
       },
     );
