@@ -5,6 +5,11 @@ import 'screens/stock_information_screen.dart';
 import 'screens/barcode_scanner_screen.dart';
 import 'screens/add_item_screen.dart';
 import 'screens/inventory_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/sign_up_screen.dart';
+import 'screens/forgot_password_screen.dart';
+import 'screens/splash_screen.dart'; 
+
 
 void main() {
   runApp(const StockStableApp());
@@ -17,9 +22,14 @@ class StockStableApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'StockStable',
+      debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/': (context) => const HomeScreen(),
+        '/': (context) => const SplashScreen(),
+        '/login': (context) => const LoginScreen(),
+        '/signUp': (context) => const SignUpScreen(),
+        '/forgotPassword': (context) => const ForgotPasswordScreen(),
+        '/home': (context) => const HomeScreen(),
         '/outOfStock': (context) => const OutOfStockScreen(),
         '/stockInfo': (context) => const StockInformationScreen(),
         '/barcodeScanner': (context) => const BarcodeScannerScreen(),
