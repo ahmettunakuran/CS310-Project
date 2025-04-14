@@ -25,7 +25,11 @@ class StockStableApp extends StatelessWidget {
         '/barcodeScanner': (context) => const BarcodeScannerScreen(),
         '/addItem': (context) => const AddItemScreen(),
         '/inventory': (context) => const InventoryScreen(),
-
+        // TODO: FURAN: SettingsScreen.dart oluşturup designladıktna sonra sağdaki navigasyonu buraya yapıştırılıcak -> '/settings': (context) => const SettingsScreen(),
+        // TODO: OZAN: HelpScreen.dart oluşturup designladıktna sonra sağdaki navigasyonu buraya yapıştırılıcak -> '/help': (context) => const HelpScreen(),
+        // TODO: OZAN: ProductDetailsScreen.dart oluşturup designladıktna sonra sağdaki navigasyonu buraya yapıştırılıcak -> '/prodcutDetails': (context) => const ProdcutDetailsScreen(),
+        // TODO: TUNA: OrderHistoryScreen.dart oluşturup designladıktna sonra sağdaki navigasyonu buraya yapıştırılıcak -> '/orderHistory': (context) => const OrderHistoryScreen(),
+        // TODO: TUNA: DeleteProductScreen.dart oluşturup designladıktna sonra sağdaki navigasyonu buraya yapıştırılıcak -> '/deleteProduct': (context) => const DeleteProductScreen(),
       },
     );
   }
