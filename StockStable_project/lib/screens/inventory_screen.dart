@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'add_item_screen.dart'; // ürün oluşturmak için sayfa
+import '../widgets/custom_drawer.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -17,14 +18,13 @@ class InventoryScreenState extends State<InventoryScreen> {
 
   static List<Map<String, dynamic>> getProducts() => products;
 
-
-
   void _showProductInfo(Map<String, dynamic> product) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: Text(product['name']),
-        content: Text("Amount: ${product['amount']}\nPrice: ₺${product['price']}"),
+        content:
+            Text("Amount: ${product['amount']}\nPrice: ₺${product['price']}"),
         actions: [
           TextButton(
             child: const Text("Close"),
@@ -66,7 +66,9 @@ class InventoryScreenState extends State<InventoryScreen> {
             Text('Amount: ${product['amount']}'),
             Text('Price: ₺${product['price']}'),
             ElevatedButton.icon(
-              onPressed: (){ Navigator.pushNamed(context, '/deleteItem');},
+              onPressed: () {
+                Navigator.pushNamed(context, '/deleteItem');
+              },
               icon: const Icon(Icons.delete, size: 16),
               label: const Text('Delete'),
               style: ElevatedButton.styleFrom(
@@ -86,13 +88,15 @@ class InventoryScreenState extends State<InventoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const CustomDrawer(),
       appBar: AppBar(title: const Text("INVENTORY")),
       body: products.isEmpty
           ? const Center(child: Text("No products yet."))
           : ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (context, index) => _buildProductCard(products[index], index),
-      ),
+              itemCount: products.length,
+              itemBuilder: (context, index) =>
+                  _buildProductCard(products[index], index),
+            ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
         child: ElevatedButton.icon(
