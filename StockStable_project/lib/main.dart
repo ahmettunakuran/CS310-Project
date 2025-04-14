@@ -25,6 +25,7 @@ class StockStableApp extends StatelessWidget {
         '/barcodeScanner': (context) => const BarcodeScannerScreen(),
         '/addItem': (context) => const AddItemScreen(),
         '/inventory': (context) => const InventoryScreen(),
+
       },
     );
   }
