@@ -3,7 +3,7 @@ import 'inventory_screen.dart'; // eklemeyi unutma
 
 
 class AddItemScreen extends StatefulWidget {
-  const AddItemScreen({super.key});
+  const AddItemScreen({super.key});\\saas 
 
   @override
   State<AddItemScreen> createState() => _AddItemScreenState();
