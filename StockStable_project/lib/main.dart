@@ -11,6 +11,7 @@ import 'screens/forgot_password_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/delete_product_screen.dart';
 import 'screens/order_history_screen.dart';
+import 'screens/help_screen.dart';
 
 void main() {
   runApp(const StockStableApp());
@@ -36,14 +37,10 @@ class StockStableApp extends StatelessWidget {
         '/barcodeScanner': (context) => const BarcodeScannerScreen(),
         '/addItem': (context) => const AddItemScreen(),
         '/inventory': (context) => const InventoryScreen(),
-        '/deleteItem': (context) =>  DeleteProductScreen(), 
-        '/deleteProduct': (context) => const InventoryScreen(),   
-        '/orderHistory': (context) =>  OrderHistoryScreen(),
-
-        // TODO:
-        // '/settings': (context) => const SettingsScreen(),
-        // '/help': (context) => const HelpScreen(),
-        // '/prodcutDetails': (context) => const ProdcutDetailsScreen(),
+        '/deleteItem': (context) => DeleteProductScreen(),
+        '/deleteProduct': (context) => const InventoryScreen(),
+        '/orderHistory': (context) => OrderHistoryScreen(),
+        '/help': (context) => const HelpScreen(),
       },
     );
   }
