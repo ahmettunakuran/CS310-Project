@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/theme_manager.dart';
+
+// Simple class to store settings in memory during runtime
+class AppSettings {
+  static bool darkMode = false;
+  static bool notifications = false;
+  static String language = 'English';
+}
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -13,32 +20,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _notifications = false;
   String _selectedLanguage = 'English';
   final List<String> _languages = ['English', 'Turkish', 'Spanish', 'French', 'German'];
+  final ThemeManager _themeManager = ThemeManager();
 
   @override
   void initState() {
     super.initState();
-    _loadSettings();
-  }
+    // Load settings from static class
+    _darkMode = AppSettings.darkMode;
+    _notifications = AppSettings.notifications;
+    _selectedLanguage = AppSettings.language;
 
-  Future<void> _loadSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _darkMode = prefs.getBool('darkMode') ?? false;
-      _notifications = prefs.getBool('notifications') ?? false;
-      _selectedLanguage = prefs.getString('language') ?? 'English';
+    // Synchronize with ThemeManager
+    _darkMode = _themeManager.isDarkMode;
+
+    // Listen for theme changes
+    _themeManager.addListener(() {
+      if (mounted) setState(() {});
     });
   }
 
-  Future<void> _saveSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('darkMode', _darkMode);
-    await prefs.setBool('notifications', _notifications);
-    await prefs.setString('language', _selectedLanguage);
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  // Save settings to static class
+  void _saveSettings() {
+    AppSettings.darkMode = _darkMode;
+    AppSettings.notifications = _notifications;
+    AppSettings.language = _selectedLanguage;
+
+    // Update ThemeManager when dark mode changes
+    _themeManager.toggleTheme(_darkMode);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _themeManager.backgroundColor,
       appBar: AppBar(
         title: const Text("SETTINGS"),
         backgroundColor: Colors.blue,
@@ -93,22 +112,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Language:',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
+                      color: _themeManager.primaryTextColor,
                     ),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
+                      color: _themeManager.isDarkMode ? Color(0xFF353535) : Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: DropdownButton<String>(
                       value: _selectedLanguage,
                       underline: const SizedBox(),
+                      dropdownColor: _themeManager.isDarkMode ? Color(0xFF353535) : Colors.grey.shade300,
+                      style: TextStyle(color: _themeManager.primaryTextColor),
+                      icon: Icon(Icons.arrow_drop_down, color: _themeManager.primaryTextColor),
                       items: _languages.map((String language) {
                         return DropdownMenuItem<String>(
                           value: language,
@@ -136,15 +159,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: 'USER INFO',
               children: [
                 _buildInfoItem(
-                  color: Colors.yellow.shade100,
+                  color: _themeManager.infoOddColor,
                   text: 'Username: user123',
                 ),
                 _buildInfoItem(
-                  color: Colors.grey.shade200,
+                  color: _themeManager.infoEvenColor,
                   text: 'Email: user@example.com',
                 ),
                 _buildInfoItem(
-                  color: Colors.yellow.shade100,
+                  color: _themeManager.infoOddColor,
                   text: 'Phone: XXX-XXX-XX-XX',
                 ),
               ],
@@ -157,15 +180,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: 'COMPANY INFO',
               children: [
                 _buildInfoItem(
-                  color: Colors.yellow.shade100,
+                  color: _themeManager.infoOddColor,
                   text: 'StockStable App v1.0.0',
                 ),
                 _buildInfoItem(
-                  color: Colors.grey.shade200,
+                  color: _themeManager.infoEvenColor,
                   text: 'Developed by CS310 Team',
                 ),
                 _buildInfoItem(
-                  color: Colors.yellow.shade100,
+                  color: _themeManager.infoOddColor,
                   text: 'Support: 0@sabanciuniv.edu',
                 ),
               ],
@@ -188,9 +211,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
+              color: _themeManager.primaryTextColor,
             ),
           ),
           Switch(
@@ -239,9 +263,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       color: color,
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
+          color: _themeManager.primaryTextColor,
         ),
       ),
     );
