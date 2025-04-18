@@ -1,0 +1,2 @@
+/Users/ismailyigitonal/Development/CS310-Project/StockStable_project/android/app/.cxx/Debug/444r3ld2/x86_64/CMakeFiles/edit_cache.dir
+/Users/ismailyigitonal/Development/CS310-Project/StockStable_project/android/app/.cxx/Debug/444r3ld2/x86_64/CMakeFiles/rebuild_cache.dir

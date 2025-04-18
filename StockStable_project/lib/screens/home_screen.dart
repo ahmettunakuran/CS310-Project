@@ -1,30 +1,54 @@
 import 'package:flutter/material.dart';
 import '../widgets/custom_drawer.dart';
+import '../utils/theme_manager.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final ThemeManager _themeManager = ThemeManager();
+
+  @override
+  void initState() {
+    super.initState();
+    _themeManager.addListener(() {
+      if (mounted) setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: _themeManager.backgroundColor,
       drawer: const CustomDrawer(),
       appBar: AppBar(
         title: SizedBox(
           height: 40,
           child: TextField(
-            style: const TextStyle(fontSize: 14.0),
+            style: TextStyle(
+              fontSize: 14.0,
+              color: _themeManager.primaryTextColor,
+            ),
             decoration: InputDecoration(
               filled: true,
-              fillColor: Colors.white,
+              fillColor: _themeManager.isDarkMode ? Color(0xFF353535) : Colors.white,
               contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
+              const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
               hintText: 'Search...',
-              hintStyle: const TextStyle(color: Colors.grey),
+              hintStyle: TextStyle(
+                color: _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: Icon(
+                Icons.search,
+                color: _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey,
+              ),
             ),
           ),
         ),
@@ -55,19 +79,23 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Out Of Stock',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: _themeManager.primaryTextColor,
+                  ),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/outOfStock');
                   },
-                  child: const Text(
+                  child: Text(
                     'View all',
                     style: TextStyle(
                       decoration: TextDecoration.underline,
-                      color: Colors.blue,
+                      color: _themeManager.isDarkMode ? Colors.lightBlue : Colors.blue,
                     ),
                   ),
                 ),
@@ -77,9 +105,16 @@ class HomeScreen extends StatelessWidget {
             Card(
               margin: const EdgeInsets.symmetric(vertical: 4),
               elevation: 2,
-              child: const ListTile(
-                title: Text('Product Name'),
-                subtitle: Text('ProductNo • Price'),
+              color: _themeManager.cardColor,
+              child: ListTile(
+                title: Text(
+                  'Product Name',
+                  style: TextStyle(color: _themeManager.primaryTextColor),
+                ),
+                subtitle: Text(
+                  'ProductNo • Price',
+                  style: TextStyle(color: _themeManager.secondaryTextColor),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -88,19 +123,23 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Stock Information',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: _themeManager.primaryTextColor,
+                  ),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/stockInfo');
                   },
-                  child: const Text(
+                  child: Text(
                     'View all',
                     style: TextStyle(
                       decoration: TextDecoration.underline,
-                      color: Colors.blue,
+                      color: _themeManager.isDarkMode ? Colors.lightBlue : Colors.blue,
                     ),
                   ),
                 ),
@@ -110,16 +149,23 @@ class HomeScreen extends StatelessWidget {
             Card(
               margin: const EdgeInsets.symmetric(vertical: 4),
               elevation: 2,
-              child: const ListTile(
-                title: Text('Product Name'),
-                subtitle: Text('ProductNo • Stock Status'),
+              color: _themeManager.cardColor,
+              child: ListTile(
+                title: Text(
+                  'Product Name',
+                  style: TextStyle(color: _themeManager.primaryTextColor),
+                ),
+                subtitle: Text(
+                  'ProductNo • Stock Status',
+                  style: TextStyle(color: _themeManager.secondaryTextColor),
+                ),
               ),
             ),
           ],
         ),
       ),
       bottomNavigationBar: Container(
-        color: Colors.white,
+        color: _themeManager.backgroundColor,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
