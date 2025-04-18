@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/theme_manager.dart';
 
 class HelpScreen extends StatefulWidget {
   const HelpScreen({super.key});
@@ -9,6 +10,8 @@ class HelpScreen extends StatefulWidget {
 
 class _HelpScreenState extends State<HelpScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final ThemeManager _themeManager = ThemeManager();
+
   final List<Map<String, String>> _faqItems = [
     {
       'question': 'How to add a new product?',
@@ -43,6 +46,9 @@ class _HelpScreenState extends State<HelpScreen> {
     super.initState();
     _filteredFaqItems = List.from(_faqItems);
     _searchController.addListener(_filterFaqItems);
+    _themeManager.addListener(() {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -69,6 +75,7 @@ class _HelpScreenState extends State<HelpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _themeManager.backgroundColor,
       appBar: AppBar(
         title: const Text("FAQ"),
         backgroundColor: Colors.blue,
@@ -78,18 +85,27 @@ class _HelpScreenState extends State<HelpScreen> {
           // Search Bar
           Container(
             padding: const EdgeInsets.all(16),
-            color: Colors.white,
+            color: _themeManager.backgroundColor,
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                fillColor: Colors.grey.shade200,
+                fillColor: _themeManager.isDarkMode ? Colors.grey[800] : Colors.grey.shade200,
                 filled: true,
                 hintText: 'Search',
-                prefixIcon: const Icon(Icons.search),
+                hintStyle: TextStyle(
+                  color: _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide.none,
                 ),
+              ),
+              style: TextStyle(
+                color: _themeManager.primaryTextColor,
               ),
             ),
           ),
@@ -97,7 +113,12 @@ class _HelpScreenState extends State<HelpScreen> {
           // FAQ Section
           Expanded(
             child: _filteredFaqItems.isEmpty
-                ? const Center(child: Text('No results found'))
+                ? Center(
+              child: Text(
+                'No results found',
+                style: TextStyle(color: _themeManager.primaryTextColor),
+              ),
+            )
                 : ListView.builder(
               itemCount: _filteredFaqItems.length,
               itemBuilder: (context, index) {
@@ -105,20 +126,37 @@ class _HelpScreenState extends State<HelpScreen> {
                 final isEven = index % 2 == 0;
 
                 return Container(
-                  color: isEven ? Colors.yellow.shade100 : Colors.grey.shade200,
-                  child: ExpansionTile(
-                    title: Text(
-                      item['question']!,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                  color: isEven ? _themeManager.faqOddColor : _themeManager.faqEvenColor,
+                  child: Theme(
+                    data: Theme.of(context).copyWith(
+                      dividerColor: Colors.transparent,
+                      unselectedWidgetColor: _themeManager.primaryTextColor,
+                      colorScheme: ColorScheme.light(
+                        primary: _themeManager.primaryTextColor,
                       ),
                     ),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        child: Text(item['answer']!),
+                    child: ExpansionTile(
+                      title: Text(
+                        item['question']!,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: _themeManager.primaryTextColor,
+                        ),
                       ),
-                    ],
+                      iconColor: _themeManager.primaryTextColor,
+                      collapsedIconColor: _themeManager.primaryTextColor,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          child: Text(
+                            item['answer']!,
+                            style: TextStyle(
+                              color: _themeManager.primaryTextColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -145,19 +183,22 @@ class _HelpScreenState extends State<HelpScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
-            color: Colors.grey.shade200,
+            color: _themeManager.isDarkMode ? Color(0xFF2A2A2A) : Colors.grey.shade200,
             child: Column(
               children: [
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color: _themeManager.isDarkMode ? Color(0xFF353535) : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Text(
+                  child: Text(
                     'NUMBER: XXX-XXX-XX-XX',
-                    style: TextStyle(fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: _themeManager.primaryTextColor,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -165,12 +206,15 @@ class _HelpScreenState extends State<HelpScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color: _themeManager.isDarkMode ? Color(0xFF353535) : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Text(
+                  child: Text(
                     'MAIL: 0@sabanciuniv.edu',
-                    style: TextStyle(fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: _themeManager.primaryTextColor,
+                    ),
                   ),
                 ),
               ],

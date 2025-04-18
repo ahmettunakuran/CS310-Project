@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
+import '../utils/theme_manager.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,34 +13,62 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final ThemeManager _themeManager = ThemeManager();
+
+  @override
+  void initState() {
+    super.initState();
+    _themeManager.addListener(() {
+      if (mounted) setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundWhite,
+      backgroundColor: _themeManager.backgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: ListView(
           children: [
             const SizedBox(height: 60),
             const SizedBox(height: 20),
-            Text('Welcome!', style: AppTextStyles.welcome, textAlign: TextAlign.center),
+            Text(
+              'Welcome!',
+              style: AppTextStyles.welcome.copyWith(
+                color: _themeManager.primaryTextColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 20),
             Container(
               height: 120,
               width: 120,
-              color: Colors.grey[300],
+              color: _themeManager.isDarkMode ? Color(0xFF404040) : Colors.grey[300],
               alignment: Alignment.center,
-              child: const Text('USER PHOTO'),
+              child: Text(
+                'USER PHOTO',
+                style: TextStyle(color: _themeManager.primaryTextColor),
+              ),
             ),
             const SizedBox(height: 32),
 
-            Text('USERNAME OR EMAIL', style: AppTextStyles.label),
+            Text(
+              'USERNAME OR EMAIL',
+              style: AppTextStyles.label.copyWith(
+                color: _themeManager.primaryTextColor,
+              ),
+            ),
             const SizedBox(height: 8),
             _buildInputField(controller: usernameController, hint: 'Username..'),
 
             const SizedBox(height: 24),
-            Text('PASSWORD', style: AppTextStyles.label),
+            Text(
+              'PASSWORD',
+              style: AppTextStyles.label.copyWith(
+                color: _themeManager.primaryTextColor,
+              ),
+            ),
             const SizedBox(height: 8),
             _buildInputField(controller: passwordController, hint: '......', obscureText: true),
 
@@ -48,7 +77,12 @@ class _LoginScreenState extends State<LoginScreen> {
               alignment: Alignment.centerRight,
               child: GestureDetector(
                 onTap: () => Navigator.pushNamed(context, '/forgotPassword'),
-                child: Text('FORGOT YOUR PASSWORD?', style: AppTextStyles.link),
+                child: Text(
+                  'FORGOT YOUR PASSWORD?',
+                  style: AppTextStyles.link.copyWith(
+                    color: _themeManager.isDarkMode ? Colors.lightBlue : AppColors.primaryBlue,
+                  ),
+                ),
               ),
             ),
 
@@ -71,7 +105,12 @@ class _LoginScreenState extends State<LoginScreen> {
             Center(
               child: GestureDetector(
                 onTap: () => Navigator.pushNamed(context, '/signUp'),
-                child: Text("DON'T HAVE ACCOUNT ?", style: AppTextStyles.link),
+                child: Text(
+                  "DON'T HAVE ACCOUNT ?",
+                  style: AppTextStyles.link.copyWith(
+                    color: _themeManager.isDarkMode ? Colors.lightBlue : AppColors.primaryBlue,
+                  ),
+                ),
               ),
             ),
           ],
@@ -87,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.fieldBackground,
+        color: _themeManager.isDarkMode ? Color(0xFF353535) : AppColors.fieldBackground,
         borderRadius: BorderRadius.circular(8),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -101,12 +140,16 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: hint,
+          hintStyle: TextStyle(
+            color: _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey[600],
+            fontSize: 12,
+          ),
         ),
-        style: const TextStyle(fontSize: 12),
+        style: TextStyle(
+          fontSize: 12,
+          color: _themeManager.primaryTextColor,
+        ),
       ),
     );
   }
 }
-
-
-
