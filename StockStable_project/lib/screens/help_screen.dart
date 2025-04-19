@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:navigate_screens/utils/app_colors.dart';
 import '../utils/theme_manager.dart';
 import '../utils/app_padding.dart';
 
@@ -85,7 +86,7 @@ class _HelpScreenState extends State<HelpScreen> {
       backgroundColor: _themeManager.backgroundColor,
       appBar: AppBar(
         title: const Text("FAQ"),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppColors.primaryBlue,
       ),
       body: Column(
         children: [
@@ -182,7 +183,7 @@ class _HelpScreenState extends State<HelpScreen> {
           Container(
             width: double.infinity,
             padding: AppPadding.all16,
-            color: Colors.blue,
+            color: AppColors.primaryBlue,
             child: const Text(
               'CONTACT',
               style: TextStyle(

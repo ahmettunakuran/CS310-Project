@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:navigate_screens/utils/app_colors.dart';
 import 'package:navigate_screens/utils/app_padding.dart';
+import 'package:navigate_screens/utils/text_styles.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -48,8 +49,7 @@ class CustomDrawer extends StatelessWidget {
                     SizedBox(width: 8),
                     Text(
                       'Log Out',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: AppTextStyles.label,
                     ),
                   ],
                 ),
@@ -77,7 +77,7 @@ class CustomDrawer extends StatelessWidget {
             children: [
               Icon(icon, color: Colors.black),
               const SizedBox(width: 12),
-              Text(label, style: const TextStyle(color: Colors.black)),
+              Text(label, style: AppTextStyles.smallButtonBlackText),
             ],
           ),
         ),

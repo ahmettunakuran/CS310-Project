@@ -3,6 +3,7 @@ import 'package:navigate_screens/utils/app_colors.dart';
 import '../widgets/custom_drawer.dart';
 import '../utils/theme_manager.dart';
 import '../utils/app_padding.dart';
+import '../utils/text_styles.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,11 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: _themeManager.backgroundColor,
       drawer: const CustomDrawer(),
       appBar: AppBar(
+        backgroundColor: AppColors.primaryBlue,
         title: SizedBox(
           height: 40,
           child: TextField(
-            style: TextStyle(
-              fontSize: 14.0,
+            style: AppTextStyles.label.copyWith(
               color: _themeManager.primaryTextColor,
             ),
             decoration: InputDecoration(
@@ -74,8 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Center(
                 child: Text(
                   'Pie Chart Placeholder',
-                  style: TextStyle(
-                      color: Color.fromARGB(255, 68, 61, 61), fontSize: 22),
+                  style: AppTextStyles.label,
                 ),
               ),
             ),
@@ -85,22 +85,17 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Out Of Stock',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: _themeManager.primaryTextColor,
-                  ),
-                ),
+                Text('Out Of Stock',
+                    style: AppTextStyles.label.copyWith(
+                      color: _themeManager.primaryTextColor,
+                    )),
                 TextButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/outOfStock');
                   },
                   child: Text(
                     'View all',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
+                    style: AppTextStyles.viewAll.copyWith(
                       color: _themeManager.isDarkMode
                           ? Colors.lightBlue
                           : Colors.blue,
@@ -131,27 +126,20 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Stock Information',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: _themeManager.primaryTextColor,
-                  ),
-                ),
+                Text('Stock Information',
+                    style: AppTextStyles.label.copyWith(
+                      color: _themeManager.primaryTextColor,
+                    )),
                 TextButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/stockInfo');
                   },
-                  child: Text(
-                    'View all',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      color: _themeManager.isDarkMode
-                          ? Colors.lightBlue
-                          : Colors.blue,
-                    ),
-                  ),
+                  child: Text('View all',
+                      style: AppTextStyles.viewAll.copyWith(
+                        color: _themeManager.isDarkMode
+                            ? Colors.lightBlue
+                            : Colors.blue,
+                      )),
                 ),
               ],
             ),
@@ -183,16 +171,17 @@ class _HomeScreenState extends State<HomeScreen> {
             // Add Item button
             Expanded(
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/addItem');
-                },
-                style: ElevatedButton.styleFrom(
-                    padding: AppPadding.vertical12,
-                    shape: const StadiumBorder(),
-                    backgroundColor: AppColors.primaryBlue),
-                child: const Text('Add Item',
-                    style: TextStyle(color: Colors.white)),
-              ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/addItem');
+                  },
+                  style: ElevatedButton.styleFrom(
+                      padding: AppPadding.vertical12,
+                      shape: const StadiumBorder(),
+                      backgroundColor: AppColors.primaryBlue),
+                  child: const Text(
+                    'Add Item',
+                    style: AppTextStyles.smallButtonWhiteText,
+                  )),
             ),
             const SizedBox(width: 8),
             // Barcode Scanner button
@@ -217,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: const Text(
                   'Delete Item',
-                  style: TextStyle(color: Colors.white),
+                  style: AppTextStyles.smallButtonWhiteText,
                 ),
               ),
             ),
