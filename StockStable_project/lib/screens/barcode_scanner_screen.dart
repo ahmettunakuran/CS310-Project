@@ -1,4 +1,6 @@
+// lib/screens/barcode_scanner_screen.dart
 import 'package:flutter/material.dart';
+import '../utils/app_padding.dart';
 
 class BarcodeScannerScreen extends StatelessWidget {
   const BarcodeScannerScreen({super.key});
@@ -6,14 +8,14 @@ class BarcodeScannerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Barcode Scanner"),
-      ),
-      body: Center(
-        child: Text(
-          "Barcode Scanner functionality will be implemented here when learned.",
-          style: Theme.of(context).textTheme.titleMedium,
-          textAlign: TextAlign.center,
+      appBar: AppBar(title: const Text("Barcode Scanner")),
+      body: Padding(
+        padding: AppPadding.all16,
+        child: const Center(
+          child: Text(
+            "Barcode Scanner functionality will be implemented here when learned.",
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
     );

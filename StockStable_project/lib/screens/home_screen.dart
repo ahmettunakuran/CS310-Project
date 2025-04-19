@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:navigate_screens/utils/app_colors.dart';
 import '../widgets/custom_drawer.dart';
 import '../utils/theme_manager.dart';
+import '../utils/app_padding.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -35,26 +37,29 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             decoration: InputDecoration(
               filled: true,
-              fillColor: _themeManager.isDarkMode ? Color(0xFF353535) : Colors.white,
+              fillColor:
+                  _themeManager.isDarkMode ? Color(0xFF353535) : Colors.white,
               contentPadding:
-              const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
               hintText: 'Search...',
               hintStyle: TextStyle(
-                color: _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey,
+                color:
+                    _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
               prefixIcon: Icon(
                 Icons.search,
-                color: _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey,
+                color:
+                    _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey,
               ),
             ),
           ),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: AppPadding.all16,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -63,13 +68,14 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 200,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 35, 91, 131),
+                color: AppColors.placeholderGrey,
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: const Center(
                 child: Text(
-                  'Chart Placeholder',
-                  style: TextStyle(color: Colors.white, fontSize: 22),
+                  'Pie Chart Placeholder',
+                  style: TextStyle(
+                      color: Color.fromARGB(255, 68, 61, 61), fontSize: 22),
                 ),
               ),
             ),
@@ -95,7 +101,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     'View all',
                     style: TextStyle(
                       decoration: TextDecoration.underline,
-                      color: _themeManager.isDarkMode ? Colors.lightBlue : Colors.blue,
+                      color: _themeManager.isDarkMode
+                          ? Colors.lightBlue
+                          : Colors.blue,
                     ),
                   ),
                 ),
@@ -103,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 8),
             Card(
-              margin: const EdgeInsets.symmetric(vertical: 4),
+              margin: AppPadding.cardMargin,
               elevation: 2,
               color: _themeManager.cardColor,
               child: ListTile(
@@ -139,7 +147,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     'View all',
                     style: TextStyle(
                       decoration: TextDecoration.underline,
-                      color: _themeManager.isDarkMode ? Colors.lightBlue : Colors.blue,
+                      color: _themeManager.isDarkMode
+                          ? Colors.lightBlue
+                          : Colors.blue,
                     ),
                   ),
                 ),
@@ -147,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 8),
             Card(
-              margin: const EdgeInsets.symmetric(vertical: 4),
+              margin: AppPadding.cardMargin,
               elevation: 2,
               color: _themeManager.cardColor,
               child: ListTile(
@@ -166,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: Container(
         color: _themeManager.backgroundColor,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: AppPadding.vertical12.add(AppPadding.horizontal16),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -177,10 +187,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.pushNamed(context, '/addItem');
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: const StadiumBorder(),
-                  backgroundColor: const Color.fromARGB(255, 24, 132, 221),
-                ),
+                    padding: AppPadding.vertical12,
+                    shape: const StadiumBorder(),
+                    backgroundColor: AppColors.primaryBlue),
                 child: const Text('Add Item',
                     style: TextStyle(color: Colors.white)),
               ),
@@ -191,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.pushNamed(context, '/barcodeScanner');
               },
-              backgroundColor: Colors.yellow.shade700,
+              backgroundColor: AppColors.buttonYellow,
               child: const Icon(Icons.qr_code, color: Colors.black),
             ),
             const SizedBox(width: 8),
@@ -202,9 +211,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.pushNamed(context, '/deleteProduct');
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: AppPadding.vertical12,
                   shape: const StadiumBorder(),
-                  backgroundColor: Colors.red,
+                  backgroundColor: AppColors.deleteRed,
                 ),
                 child: const Text(
                   'Delete Item',

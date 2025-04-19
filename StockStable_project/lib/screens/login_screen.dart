@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
 import '../utils/theme_manager.dart';
+import '../utils/app_padding.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -28,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: _themeManager.backgroundColor,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: AppPadding.screenPadding,
         child: ListView(
           children: [
             const SizedBox(height: 60),
@@ -44,7 +45,9 @@ class _LoginScreenState extends State<LoginScreen> {
             Container(
               height: 120,
               width: 120,
-              color: _themeManager.isDarkMode ? Color(0xFF404040) : Colors.grey[300],
+              color: _themeManager.isDarkMode
+                  ? const Color(0xFF404040)
+                  : Colors.grey[300],
               alignment: Alignment.center,
               child: Text(
                 'USER PHOTO',
@@ -52,7 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 32),
-
             Text(
               'USERNAME OR EMAIL',
               style: AppTextStyles.label.copyWith(
@@ -60,8 +62,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            _buildInputField(controller: usernameController, hint: 'Username..'),
-
+            _buildInputField(
+                controller: usernameController, hint: 'Username..'),
             const SizedBox(height: 24),
             Text(
               'PASSWORD',
@@ -70,8 +72,11 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            _buildInputField(controller: passwordController, hint: '......', obscureText: true),
-
+            _buildInputField(
+              controller: passwordController,
+              hint: '......',
+              obscureText: true,
+            ),
             const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerRight,
@@ -80,19 +85,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Text(
                   'FORGOT YOUR PASSWORD?',
                   style: AppTextStyles.link.copyWith(
-                    color: _themeManager.isDarkMode ? Colors.lightBlue : AppColors.primaryBlue,
+                    color: _themeManager.isDarkMode
+                        ? Colors.lightBlue
+                        : AppColors.primaryBlue,
                   ),
                 ),
               ),
             ),
-
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryBlue,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: AppPadding.vertical12,
                 ),
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, '/home');
@@ -100,7 +106,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Text('Log in', style: AppTextStyles.buttonText),
               ),
             ),
-
             const SizedBox(height: 16),
             Center(
               child: GestureDetector(
@@ -108,7 +113,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Text(
                   "DON'T HAVE ACCOUNT ?",
                   style: AppTextStyles.link.copyWith(
-                    color: _themeManager.isDarkMode ? Colors.lightBlue : AppColors.primaryBlue,
+                    color: _themeManager.isDarkMode
+                        ? Colors.lightBlue
+                        : AppColors.primaryBlue,
                   ),
                 ),
               ),
@@ -126,10 +133,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: _themeManager.isDarkMode ? Color(0xFF353535) : AppColors.fieldBackground,
+        color: _themeManager.isDarkMode
+            ? const Color(0xFF353535)
+            : AppColors.fieldBackground,
         borderRadius: BorderRadius.circular(8),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: AppPadding.horizontal16,
       child: TextField(
         controller: controller,
         obscureText: obscureText,
@@ -141,7 +150,8 @@ class _LoginScreenState extends State<LoginScreen> {
           border: InputBorder.none,
           hintText: hint,
           hintStyle: TextStyle(
-            color: _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey[600],
+            color:
+                _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey[600],
             fontSize: 12,
           ),
         ),

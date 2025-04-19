@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
+import '../utils/app_padding.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});
@@ -10,20 +11,18 @@ class ForgotPasswordScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroundWhite,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: AppPadding.screenPadding,
         child: ListView(
           children: [
             const SizedBox(height: 60),
-            
-            
             Align(
               alignment: Alignment.centerLeft,
               child: IconButton(
                 icon: const Icon(Icons.home, color: AppColors.primaryBlue),
-                onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, '/login'),
               ),
             ),
-
             const SizedBox(height: 24),
             Text('ENTER THE CODE', style: AppTextStyles.label),
             const SizedBox(height: 16),
@@ -31,23 +30,22 @@ class ForgotPasswordScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(4, (_) => _buildCodeBox()),
             ),
-
             const SizedBox(height: 32),
             _buildLabelAndField('NEW PASSWORD', '......', obscure: true),
             _buildLabelAndField('PASSWORD AGAIN', '......', obscure: true),
-
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryBlue,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: AppPadding.vertical12,
                 ),
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, '/login');
                 },
-                child: Text('Confirm Your Password', style: AppTextStyles.buttonText),
+                child: Text('Confirm Your Password',
+                    style: AppTextStyles.buttonText),
               ),
             ),
           ],
@@ -56,7 +54,8 @@ class ForgotPasswordScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLabelAndField(String label, String hint, {bool obscure = false}) {
+  Widget _buildLabelAndField(String label, String hint,
+      {bool obscure = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -67,7 +66,7 @@ class ForgotPasswordScreen extends StatelessWidget {
             color: AppColors.fieldBackground,
             borderRadius: BorderRadius.circular(8),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: AppPadding.horizontal16,
           child: TextField(
             obscureText: obscure,
             enableSuggestions: true,

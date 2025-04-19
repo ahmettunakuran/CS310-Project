@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:navigate_screens/utils/app_colors.dart';
+import '../utils/app_padding.dart';
 
 class OutOfStockScreen extends StatelessWidget {
   const OutOfStockScreen({super.key});
 
-  // A sample list of out-of-stock products.
   final List<Map<String, String>> outOfStockProducts = const [
     {"name": "Product A", "number": "0001", "price": "\$15"},
     {"name": "Product C", "number": "0016", "price": "\$300"},
@@ -12,15 +13,16 @@ class OutOfStockScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.backgroundWhite,
       appBar: AppBar(
+        backgroundColor: AppColors.primaryBlue,
         title: const Text("Out of Stock Items"),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(8.0),
+        padding: AppPadding.all8,
         children: outOfStockProducts.map((product) {
           return Card(
-            margin: const EdgeInsets.symmetric(vertical: 4),
+            margin: AppPadding.cardMargin,
             child: ListTile(
               title: Text(product["name"]!),
               subtitle: Column(
@@ -35,16 +37,16 @@ class OutOfStockScreen extends StatelessWidget {
         }).toList(),
       ),
       bottomNavigationBar: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.all(18.0),
+        color: AppColors.backgroundWhite,
+        padding: AppPadding.bottomButton,
         child: ElevatedButton(
           onPressed: () {
             Navigator.pushNamed(context, "/addItem");
           },
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 18),
+            padding: AppPadding.vertical16,
             shape: const StadiumBorder(),
-            backgroundColor: const Color.fromARGB(255, 24, 132, 221),
+            backgroundColor: AppColors.primaryBlue,
           ),
           child: const Text(
             "Add Item",
