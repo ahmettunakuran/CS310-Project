@@ -1,9 +1,10 @@
-// ✅ SignUpScreen with basic form validation
+
 
 import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
 import '../utils/app_padding.dart';
+import '../utils/theme_manager.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -19,17 +20,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _passwordController = TextEditingController();
   final _passwordAgainController = TextEditingController();
   final _phoneController = TextEditingController();
+  final ThemeManager _themeManager = ThemeManager();
+
+  @override
+  void initState() {
+    super.initState();
+    _themeManager.addListener(() {
+      if (mounted) setState(() {});
+    });
+  }
 
   void _showInvalidFormDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Invalid Form'),
-        content: const Text('Please fill all fields correctly.'),
+        backgroundColor: _themeManager.isDarkMode ? _themeManager.cardColor : Colors.white,
+        title: Text('Invalid Form',
+          style: TextStyle(color: _themeManager.primaryTextColor),
+        ),
+        content: Text('Please fill all fields correctly.',
+          style: TextStyle(color: _themeManager.primaryTextColor),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text('OK',
+              style: TextStyle(color: _themeManager.isDarkMode ? Colors.lightBlue : AppColors.primaryBlue),
+            ),
           )
         ],
       ),
@@ -39,7 +56,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundWhite,
+      backgroundColor: _themeManager.isDarkMode ? _themeManager.backgroundColor : AppColors.backgroundWhite,
       body: Padding(
         padding: AppPadding.screenPadding,
         child: Form(
@@ -50,7 +67,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: IconButton(
-                  icon: const Icon(Icons.home, color: AppColors.primaryBlue),
+                  icon: Icon(Icons.home,
+                      color: _themeManager.isDarkMode ? Colors.lightBlue : AppColors.primaryBlue
+                  ),
                   onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
                 ),
               ),
@@ -110,19 +129,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildLabelAndField(String label, String hint, {
-    bool obscure = false,
-    required TextEditingController controller,
-    String? Function(String?)? validator,
-  }) {
+  Widget _buildLabelAndField(
+      String label,
+      String hint, {
+        bool obscure = false,
+        required TextEditingController controller,
+        String? Function(String?)? validator,
+      }
+      ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppTextStyles.label),
+        Text(
+            label,
+            style: AppTextStyles.label.copyWith(
+                color: _themeManager.primaryTextColor
+            )
+        ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.fieldBackground,
+            color: _themeManager.isDarkMode ? Color(0xFF353535) : AppColors.fieldBackground,
             borderRadius: BorderRadius.circular(8),
           ),
           padding: AppPadding.horizontal16,
@@ -136,8 +163,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: hint,
+              hintStyle: TextStyle(
+                color: _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                fontSize: 12,
+              ),
+              errorStyle: TextStyle(
+                color: _themeManager.isDarkMode ? Colors.redAccent : Colors.red,
+              ),
             ),
-            style: const TextStyle(fontSize: 12),
+            style: TextStyle(
+              fontSize: 12,
+              color: _themeManager.primaryTextColor,
+            ),
             validator: validator,
           ),
         ),
