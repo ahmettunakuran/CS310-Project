@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:navigate_screens/utils/app_colors.dart';
+import 'package:navigate_screens/utils/text_styles.dart';
 import '../utils/app_padding.dart';
 
 class OutOfStockScreen extends StatelessWidget {
@@ -16,7 +17,10 @@ class OutOfStockScreen extends StatelessWidget {
       backgroundColor: AppColors.backgroundWhite,
       appBar: AppBar(
         backgroundColor: AppColors.primaryBlue,
-        title: const Text("Out of Stock Items"),
+        title: const Text(
+          "Out of Stock Items",
+          style: AppTextStyles.appBarText,
+        ),
       ),
       body: ListView(
         padding: AppPadding.all8,
@@ -50,7 +54,7 @@ class OutOfStockScreen extends StatelessWidget {
           ),
           child: const Text(
             "Add Item",
-            style: TextStyle(color: Colors.white),
+            style: AppTextStyles.smallButtonWhiteText,
           ),
         ),
       ),

@@ -32,4 +32,22 @@ class AppTextStyles {
     fontWeight: FontWeight.bold,
     color: Colors.white,
   );
+
+  static const TextStyle smallButtonWhiteText = TextStyle(
+    fontSize: 14,
+    color: Colors.white,
+  );
+  static const TextStyle smallButtonBlackText = TextStyle(
+    fontSize: 14,
+    color: Colors.black,
+  );
+
+  static const TextStyle viewAll = TextStyle(
+    decoration: TextDecoration.underline,
+  );
+
+  static const TextStyle appBarText = TextStyle(
+    fontSize: 24,
+    color: Colors.white,
+  );
 }

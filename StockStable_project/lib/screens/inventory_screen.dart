@@ -89,7 +89,10 @@ class InventoryScreenState extends State<InventoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("INVENTORY")),
+      appBar: AppBar(
+        title: const Text("INVENTORY"),
+        backgroundColor: AppColors.primaryBlue,
+      ),
       body: products.isEmpty
           ? const Center(child: Text("No products yet."))
           : ListView.builder(
