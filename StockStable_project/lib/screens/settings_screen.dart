@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:navigate_screens/utils/app_colors.dart';
 import '../utils/theme_manager.dart';
+import '../utils/app_padding.dart';
 
-// Simple class to store settings in memory during runtime
 class AppSettings {
   static bool darkMode = false;
   static bool notifications = false;
@@ -19,38 +20,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _darkMode = false;
   bool _notifications = false;
   String _selectedLanguage = 'English';
-  final List<String> _languages = ['English', 'Turkish', 'Spanish', 'French', 'German'];
+  final List<String> _languages = [
+    'English',
+    'Turkish',
+    'Spanish',
+    'French',
+    'German'
+  ];
   final ThemeManager _themeManager = ThemeManager();
 
   @override
   void initState() {
     super.initState();
-    // Load settings from static class
     _darkMode = AppSettings.darkMode;
     _notifications = AppSettings.notifications;
     _selectedLanguage = AppSettings.language;
-
-    // Synchronize with ThemeManager
     _darkMode = _themeManager.isDarkMode;
 
-    // Listen for theme changes
     _themeManager.addListener(() {
       if (mounted) setState(() {});
     });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  // Save settings to static class
   void _saveSettings() {
     AppSettings.darkMode = _darkMode;
     AppSettings.notifications = _notifications;
     AppSettings.language = _selectedLanguage;
-
-    // Update ThemeManager when dark mode changes
     _themeManager.toggleTheme(_darkMode);
   }
 
@@ -60,17 +55,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       backgroundColor: _themeManager.backgroundColor,
       appBar: AppBar(
         title: const Text("SETTINGS"),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppColors.primaryBlue,
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Settings Header
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              color: Colors.blue,
+              padding: AppPadding.all16,
+              color: AppColors.primaryBlue,
               alignment: Alignment.center,
               child: const Text(
                 'SETTINGS',
@@ -81,8 +75,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-
-            // Dark Mode Toggle
             _buildToggleSetting(
               title: 'Dark mode:',
               value: _darkMode,
@@ -93,8 +85,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 });
               },
             ),
-
-            // Notifications Toggle
             _buildToggleSetting(
               title: 'Notifications:',
               value: _notifications,
@@ -105,10 +95,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 });
               },
             ),
-
-            // Language Dropdown
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              padding: AppPadding.horizontal20.add(AppPadding.vertical16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -121,17 +109,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: AppPadding.horizontal16,
                     decoration: BoxDecoration(
-                      color: _themeManager.isDarkMode ? Color(0xFF353535) : Colors.grey.shade300,
+                      color: _themeManager.isDarkMode
+                          ? const Color(0xFF353535)
+                          : Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: DropdownButton<String>(
                       value: _selectedLanguage,
                       underline: const SizedBox(),
-                      dropdownColor: _themeManager.isDarkMode ? Color(0xFF353535) : Colors.grey.shade300,
+                      dropdownColor: _themeManager.isDarkMode
+                          ? const Color(0xFF353535)
+                          : Colors.grey.shade300,
                       style: TextStyle(color: _themeManager.primaryTextColor),
-                      icon: Icon(Icons.arrow_drop_down, color: _themeManager.primaryTextColor),
+                      icon: Icon(Icons.arrow_drop_down,
+                          color: _themeManager.primaryTextColor),
                       items: _languages.map((String language) {
                         return DropdownMenuItem<String>(
                           value: language,
@@ -151,46 +144,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
-
-            // User Info Section
             _buildInfoSection(
               title: 'USER INFO',
               children: [
                 _buildInfoItem(
-                  color: _themeManager.infoOddColor,
-                  text: 'Username: user123',
-                ),
+                    text: 'Username: user123',
+                    color: _themeManager.infoOddColor),
                 _buildInfoItem(
-                  color: _themeManager.infoEvenColor,
-                  text: 'Email: user@example.com',
-                ),
+                    text: 'Email: user@example.com',
+                    color: _themeManager.infoEvenColor),
                 _buildInfoItem(
-                  color: _themeManager.infoOddColor,
-                  text: 'Phone: XXX-XXX-XX-XX',
-                ),
+                    text: 'Phone: XXX-XXX-XX-XX',
+                    color: _themeManager.infoOddColor),
               ],
             ),
-
             const SizedBox(height: 20),
-
-            // Company Info Section
             _buildInfoSection(
               title: 'COMPANY INFO',
               children: [
                 _buildInfoItem(
-                  color: _themeManager.infoOddColor,
-                  text: 'StockStable App v1.0.0',
-                ),
+                    text: 'StockStable App v1.0.0',
+                    color: _themeManager.infoOddColor),
                 _buildInfoItem(
-                  color: _themeManager.infoEvenColor,
-                  text: 'Developed by CS310 Team',
-                ),
+                    text: 'Developed by CS310 Team',
+                    color: _themeManager.infoEvenColor),
                 _buildInfoItem(
-                  color: _themeManager.infoOddColor,
-                  text: 'Support: 0@sabanciuniv.edu',
-                ),
+                    text: 'Support: 0@sabanciuniv.edu',
+                    color: _themeManager.infoOddColor),
               ],
             ),
           ],
@@ -205,7 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required ValueChanged<bool> onChanged,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: AppPadding.horizontal20.add(AppPadding.vertical16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -220,7 +201,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: Colors.blue,
+            activeColor: AppColors.primaryBlue,
           ),
         ],
       ),
@@ -236,8 +217,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          color: Colors.blue,
+          padding: AppPadding.all16,
+          color: AppColors.primaryBlue,
           alignment: Alignment.center,
           child: Text(
             title,
@@ -259,7 +240,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: AppPadding.all16,
       color: color,
       child: Text(
         text,

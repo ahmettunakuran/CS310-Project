@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
+import '../utils/app_padding.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -10,34 +11,31 @@ class SignUpScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroundWhite,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: AppPadding.screenPadding,
         child: ListView(
           children: [
             const SizedBox(height: 60),
-
-            
             Align(
               alignment: Alignment.centerLeft,
               child: IconButton(
                 icon: const Icon(Icons.home, color: AppColors.primaryBlue),
-                onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, '/login'),
               ),
             ),
-
             const SizedBox(height: 24),
             _buildLabelAndField('EMAIL ADDRESS', 'example@mail.com'),
             _buildLabelAndField('USERNAME', 'Username..'),
             _buildLabelAndField('PASSWORD', '......', obscure: true),
             _buildLabelAndField('PASSWORD AGAIN', '......', obscure: true),
             _buildLabelAndField('PHONE NUMBER', '05xx xxx xx xx'),
-
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryBlue,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: AppPadding.vertical16,
                 ),
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, '/login');
@@ -51,7 +49,8 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLabelAndField(String label, String hint, {bool obscure = false}) {
+  Widget _buildLabelAndField(String label, String hint,
+      {bool obscure = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -62,7 +61,7 @@ class SignUpScreen extends StatelessWidget {
             color: AppColors.fieldBackground,
             borderRadius: BorderRadius.circular(8),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: AppPadding.horizontal16,
           child: TextField(
             obscureText: obscure,
             enableSuggestions: true,
@@ -81,4 +80,3 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 }
-

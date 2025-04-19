@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'add_item_screen.dart'; // ürün oluşturmak için sayfa
+import 'package:navigate_screens/utils/app_colors.dart';
+import 'add_item_screen.dart';
+import '../utils/app_padding.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -17,14 +19,13 @@ class InventoryScreenState extends State<InventoryScreen> {
 
   static List<Map<String, dynamic>> getProducts() => products;
 
-
-
   void _showProductInfo(Map<String, dynamic> product) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: Text(product['name']),
-        content: Text("Amount: ${product['amount']}\nPrice: ₺${product['price']}"),
+        content:
+            Text("Amount: ${product['amount']}\nPrice: ₺${product['price']}"),
         actions: [
           TextButton(
             child: const Text("Close"),
@@ -50,14 +51,14 @@ class InventoryScreenState extends State<InventoryScreen> {
 
   Widget _buildProductCard(Map<String, dynamic> product, int index) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: AppPadding.listPadding,
       child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
+        contentPadding: AppPadding.all16,
         leading: Container(
           width: 60,
           height: 60,
-          color: Colors.grey.shade300,
-          child: const Icon(Icons.image, color: Colors.grey),
+          color: AppColors.placeholderGrey,
+          child: const Icon(Icons.image, color: AppColors.greyCol),
         ),
         title: Text('Product Name: ${product['name']}'),
         subtitle: Column(
@@ -66,11 +67,13 @@ class InventoryScreenState extends State<InventoryScreen> {
             Text('Amount: ${product['amount']}'),
             Text('Price: ₺${product['price']}'),
             ElevatedButton.icon(
-              onPressed: (){ Navigator.pushNamed(context, '/deleteItem');},
+              onPressed: () {
+                Navigator.pushNamed(context, '/deleteItem');
+              },
               icon: const Icon(Icons.delete, size: 16),
               label: const Text('Delete'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
+                backgroundColor: AppColors.deleteRed,
               ),
             )
           ],
@@ -90,11 +93,12 @@ class InventoryScreenState extends State<InventoryScreen> {
       body: products.isEmpty
           ? const Center(child: Text("No products yet."))
           : ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (context, index) => _buildProductCard(products[index], index),
-      ),
+              itemCount: products.length,
+              itemBuilder: (context, index) =>
+                  _buildProductCard(products[index], index),
+            ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: AppPadding.all16,
         child: ElevatedButton.icon(
           onPressed: _navigateToAddItem,
           icon: const Icon(Icons.add),

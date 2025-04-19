@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
+import '../utils/app_padding.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -13,9 +14,12 @@ class SplashScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroundWhite,
       body: Center(
-        child: Image.asset(
-          'lib/assets/stock_stable_logo.png',
-          width: 200,
+        child: Padding(
+          padding: AppPadding.all16,
+          child: Image.asset(
+            'lib/assets/stock_stable_logo.png',
+            width: 200,
+          ),
         ),
       ),
     );

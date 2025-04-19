@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:navigate_screens/utils/app_colors.dart';
+import 'package:navigate_screens/utils/app_padding.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -6,69 +8,79 @@ class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            decoration: const BoxDecoration(color: Colors.blue),
-            child: Text(
-              'Menu',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(color: Colors.white),
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Home icon (clickable)
+            Padding(
+              padding: AppPadding.all16,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/home');
+                },
+                child: Icon(Icons.home, size: 40, color: AppColors.primaryBlue),
+              ),
             ),
+
+            const SizedBox(height: 20),
+
+            // Buttons
+            _drawerButton(
+                context, Icons.inventory_2, 'Inventory', '/inventory'),
+            _drawerButton(
+                context, Icons.receipt_long, 'Order History', '/orderHistory'),
+            _drawerButton(context, Icons.settings, 'Settings', '/settings'),
+            _drawerButton(context, Icons.help, 'Help', '/help'),
+
+            const Spacer(),
+
+            // Log Out
+            Padding(
+              padding: AppPadding.all16,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/login');
+                },
+                child: Row(
+                  children: const [
+                    Icon(Icons.logout, color: Colors.black),
+                    SizedBox(width: 8),
+                    Text(
+                      'Log Out',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _drawerButton(
+      BuildContext context, IconData icon, String label, String route) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
+      child: InkWell(
+        onTap: () => Navigator.pushNamed(context, route),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.yellow.shade700,
+            borderRadius: BorderRadius.circular(20),
           ),
-          Container(
-            height: 70,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.black),
+              const SizedBox(width: 12),
+              Text(label, style: const TextStyle(color: Colors.black)),
+            ],
           ),
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Home'),
-            onTap: () {
-              Navigator.pushNamed(context, '/');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.inventory),
-            title: const Text('Inventory'),
-            onTap: () {
-              Navigator.pushNamed(context, '/inventory');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.history),
-            title: const Text('Order History'),
-            onTap: () {
-              Navigator.pushNamed(context, '/orderHistory');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
-            onTap: () {
-              Navigator.pushNamed(context, '/settings');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.help),
-            title: const Text('Help'),
-            onTap: () {
-              Navigator.pushNamed(context, '/help');
-            },
-          ),
-          Container(
-            height: 300,
-          ),
-          const Spacer(),
-          ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Log Out'),
-              onTap: () {
-                // TODO: LOG PUT LOGIC BY ISO
-                Navigator.pop(context);
-              }),
-        ],
+        ),
       ),
     );
   }

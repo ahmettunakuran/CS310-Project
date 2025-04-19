@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:navigate_screens/utils/app_colors.dart';
+import '../utils/app_padding.dart';
 
 class StockInformationScreen extends StatelessWidget {
   const StockInformationScreen({super.key});
@@ -6,23 +8,24 @@ class StockInformationScreen extends StatelessWidget {
   final List<Map<String, String>> outOfStockProducts = const [
     {"name": "Product A", "number": "0001", "status": "Low on stock"},
     {"name": "Product C", "number": "0016", "status": "Low on stock"},
-    {"name": "Product C", "number": "0016", "status": "Low on stock"},
-    {"name": "Product C", "number": "0016", "status": "Low on stock"},
-    {"name": "Product C", "number": "0016", "status": "Low on stock"},
+    {"name": "Product D", "number": "0022", "status": "Low on stock"},
+    {"name": "Product E", "number": "0031", "status": "Low on stock"},
+    {"name": "Product F", "number": "0044", "status": "Low on stock"},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.backgroundWhite,
       appBar: AppBar(
+        backgroundColor: AppColors.primaryBlue,
         title: const Text("Stock Information"),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(8.0),
+        padding: AppPadding.all8,
         children: outOfStockProducts.map((product) {
           return Card(
-            margin: const EdgeInsets.symmetric(vertical: 4),
+            margin: AppPadding.cardMargin,
             child: ListTile(
               title: Text(product["name"]!),
               subtitle: Column(
@@ -34,19 +37,19 @@ class StockInformationScreen extends StatelessWidget {
               ),
             ),
           );
-        }).toList(), // Converting iterable maps to list
+        }).toList(),
       ),
       bottomNavigationBar: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.all(18.0),
+        color: AppColors.backgroundWhite,
+        padding: AppPadding.bottomButton,
         child: ElevatedButton(
           onPressed: () {
             Navigator.pushNamed(context, "/addItem");
           },
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 18),
+            padding: AppPadding.vertical16,
             shape: const StadiumBorder(),
-            backgroundColor: const Color.fromARGB(255, 24, 132, 221),
+            backgroundColor: AppColors.primaryBlue,
           ),
           child: const Text(
             "Add Item",
