@@ -1,6 +1,7 @@
 // lib/screens/add_item_screen.dart
 import 'package:flutter/material.dart';
 import 'package:navigate_screens/utils/app_colors.dart';
+import 'package:navigate_screens/utils/text_styles.dart';
 import '../utils/app_padding.dart';
 import 'inventory_screen.dart';
 
@@ -39,7 +40,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Item")),
+      appBar: AppBar(
+        title: const Text("Add Item", style: AppTextStyles.appBarText),
+        backgroundColor: AppColors.primaryBlue,
+      ),
       body: SingleChildScrollView(
         padding: AppPadding.all20,
         child: Form(
@@ -62,41 +66,56 @@ class _AddItemScreenState extends State<AddItemScreen> {
               TextFormField(
                 controller: _stockController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Enter the stock'),
+                decoration: const InputDecoration(
+                  labelText: 'Enter the stock',
+                  labelStyle: AppTextStyles.label,
+                ),
+                style: AppTextStyles.hint,
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Stok girin' : null,
+                value == null || value.isEmpty ? 'Stok girin' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _nameController,
-                decoration:
-                    const InputDecoration(labelText: 'Enter the product name'),
+                decoration: const InputDecoration(
+                  labelText: 'Enter the product name',
+                  labelStyle: AppTextStyles.label,
+                ),
+                style: AppTextStyles.hint,
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Ürün adı girin' : null,
+                value == null || value.isEmpty ? 'Ürün adı girin' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _categoryController,
-                decoration:
-                    const InputDecoration(labelText: 'Enter the category'),
+                decoration: const InputDecoration(
+                  labelText: 'Enter the category',
+                  labelStyle: AppTextStyles.label,
+                ),
+                style: AppTextStyles.hint,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _priceController,
                 keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                decoration:
-                    const InputDecoration(labelText: 'Enter the price (₺)'),
+                const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                  labelText: 'Enter the price (₺)',
+                  labelStyle: AppTextStyles.label,
+                ),
+                style: AppTextStyles.hint,
               ),
               const SizedBox(height: 30),
               ElevatedButton.icon(
                 onPressed: _submitForm,
                 icon: const Icon(Icons.add),
-                label: const Text('Add'),
+                label: const Text('Add', style: AppTextStyles.buttonText),
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryBlue,
                   minimumSize: const Size(double.infinity, 48),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24)),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
                 ),
               ),
             ],
