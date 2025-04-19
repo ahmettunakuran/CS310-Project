@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:navigate_screens/utils/app_colors.dart';
 import 'package:navigate_screens/utils/text_styles.dart';
 import '../utils/app_padding.dart';
+import '../utils/theme_manager.dart';
 
-class OutOfStockScreen extends StatelessWidget {
+class OutOfStockScreen extends StatefulWidget {
   const OutOfStockScreen({super.key});
+
+  @override
+  State<OutOfStockScreen> createState() => _OutOfStockScreenState();
+}
+
+class _OutOfStockScreenState extends State<OutOfStockScreen> {
+  final ThemeManager _themeManager = ThemeManager();
 
   final List<Map<String, String>> outOfStockProducts = const [
     {"name": "Product A", "number": "0001", "price": "\$15"},
@@ -12,9 +20,17 @@ class OutOfStockScreen extends StatelessWidget {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _themeManager.addListener(() {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundWhite,
+      backgroundColor: _themeManager.isDarkMode ? _themeManager.backgroundColor : AppColors.backgroundWhite,
       appBar: AppBar(
         backgroundColor: AppColors.primaryBlue,
         title: const Text(
@@ -27,13 +43,23 @@ class OutOfStockScreen extends StatelessWidget {
         children: outOfStockProducts.map((product) {
           return Card(
             margin: AppPadding.cardMargin,
+            color: _themeManager.isDarkMode ? _themeManager.cardColor : Colors.white,
             child: ListTile(
-              title: Text(product["name"]!),
+              title: Text(
+                product["name"]!,
+                style: TextStyle(color: _themeManager.primaryTextColor),
+              ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Number: ${product["number"]}"),
-                  Text("Price: ${product["price"]}"),
+                  Text(
+                    "Number: ${product["number"]}",
+                    style: TextStyle(color: _themeManager.secondaryTextColor),
+                  ),
+                  Text(
+                    "Price: ${product["price"]}",
+                    style: TextStyle(color: _themeManager.secondaryTextColor),
+                  ),
                 ],
               ),
             ),
@@ -41,7 +67,7 @@ class OutOfStockScreen extends StatelessWidget {
         }).toList(),
       ),
       bottomNavigationBar: Container(
-        color: AppColors.backgroundWhite,
+        color: _themeManager.isDarkMode ? _themeManager.backgroundColor : AppColors.backgroundWhite,
         padding: AppPadding.bottomButton,
         child: ElevatedButton(
           onPressed: () {
