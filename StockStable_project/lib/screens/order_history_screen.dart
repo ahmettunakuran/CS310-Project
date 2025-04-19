@@ -7,7 +7,20 @@ class OrderHistoryScreen extends StatefulWidget {
 }
 
 class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
-  final List<String> months = ['January', 'February', 'March', 'April', 'May', 'June','July','August', 'September','October','November','December'];
+  final List<String> months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
   final ThemeManager _themeManager = ThemeManager();
   String selectedMonth = 'March';
 
@@ -28,7 +41,12 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           style: TextStyle(
             color: Color(0xFF252533),
             fontSize: 25.0,
-            shadows: [Shadow(offset: Offset(2, 2), blurRadius: 4.0, color: Color(0xFFc6c6c6))],
+            shadows: [
+              Shadow(
+                  offset: Offset(2, 2),
+                  blurRadius: 4.0,
+                  color: Color(0xFFc6c6c6))
+            ],
           ),
         ),
         backgroundColor: Color(0xffcbccff),
@@ -48,13 +66,18 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                   ),
                   hintText: 'Search',
                   hintStyle: TextStyle(
-                    color: _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                    color: _themeManager.isDarkMode
+                        ? Colors.grey[400]
+                        : Colors.grey[600],
                   ),
-                  fillColor: _themeManager.isDarkMode ? Color(0xFF353535) : null,
+                  fillColor:
+                      _themeManager.isDarkMode ? Color(0xFF353535) : null,
                   filled: _themeManager.isDarkMode,
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _themeManager.isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+                      color: _themeManager.isDarkMode
+                          ? Colors.grey[700]!
+                          : Colors.grey[300]!,
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -66,9 +89,11 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
               padding: EdgeInsets.fromLTRB(0, 0, 30, 0),
               child: DropdownButton<String>(
                 value: selectedMonth,
-                dropdownColor: _themeManager.isDarkMode ? Color(0xFF353535) : null,
+                dropdownColor:
+                    _themeManager.isDarkMode ? Color(0xFF353535) : null,
                 style: TextStyle(color: _themeManager.primaryTextColor),
-                icon: Icon(Icons.arrow_drop_down, color: _themeManager.primaryTextColor),
+                icon: Icon(Icons.arrow_drop_down,
+                    color: _themeManager.primaryTextColor),
                 items: months.map((String value) {
                   return DropdownMenuItem(value: value, child: Text(value));
                 }).toList(),
@@ -88,10 +113,12 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                   Color cardColor;
                   if (_themeManager.isDarkMode) {
                     // Darker versions of the colors for dark mode
-                    cardColor = index % 2 == 0 ? Color(0xFF1F4F1F) : Color(0xFF4F1F1F);
+                    cardColor =
+                        index % 2 == 0 ? Color(0xFF1F4F1F) : Color(0xFF4F1F1F);
                   } else {
                     // Original colors for light mode
-                    cardColor = index % 2 == 0 ? Colors.green[200]! : Colors.red[200]!;
+                    cardColor =
+                        index % 2 == 0 ? Colors.green[200]! : Colors.red[200]!;
                   }
 
                   return Card(
