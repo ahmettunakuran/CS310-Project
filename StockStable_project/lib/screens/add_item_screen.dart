@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:navigate_screens/utils/app_colors.dart';
 import 'package:navigate_screens/utils/text_styles.dart';
 import '../utils/app_padding.dart';
-import 'inventory_screen.dart';
 
 class AddItemScreen extends StatefulWidget {
   const AddItemScreen({super.key});
@@ -20,25 +19,53 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final _categoryController = TextEditingController();
 
   void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      final name = _nameController.text;
-      final stock = int.tryParse(_stockController.text) ?? 0;
-      final price = double.tryParse(_priceController.text) ?? 0.0;
-      final category = _categoryController.text;
+    final isValid = _formKey.currentState!.validate();
 
-      final newProduct = {
-        'name': name,
-        'amount': stock,
-        'price': price,
-        'category': category,
-      };
-      InventoryScreenState.addProduct(newProduct);
-      Navigator.pop(context, newProduct);
+    if (!isValid) {
+      _showValidationDialog();
+      return;
     }
+
+    final name = _nameController.text;
+    final stock = int.tryParse(_stockController.text) ?? 0;
+    final price = double.tryParse(_priceController.text) ?? 0.0;
+    final category = _categoryController.text;
+
+    final newProduct = {
+      'name': name,
+      'amount': stock,
+      'price': price,
+      'category': category,
+    };
+
+    Navigator.pop(context, newProduct);
+  }
+
+  void _showValidationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Invalid Input", style: AppTextStyles.label),
+        content: const Text(
+          "Please check your inputs. Make sure stock is a whole number and price is a valid number.",
+          style: AppTextStyles.hint,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK", style: AppTextStyles.link),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color textColor = isDark ? Colors.white : Colors.black;
+    final Color hintColor = isDark ? Colors.grey[400]! : Colors.grey;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add Item", style: AppTextStyles.appBarText),
@@ -63,49 +90,84 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 ),
               ),
               const SizedBox(height: 20),
+
+              // Stock
               TextFormField(
                 controller: _stockController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Enter the stock',
-                  labelStyle: AppTextStyles.label,
+                  labelStyle: AppTextStyles.label.copyWith(color: textColor),
+                  hintText: 'Enter the stock',
+                  hintStyle: AppTextStyles.hint.copyWith(color: hintColor),
                 ),
-                style: AppTextStyles.hint,
-                validator: (value) =>
-                value == null || value.isEmpty ? 'Stok girin' : null,
+                style: AppTextStyles.hint.copyWith(color: textColor),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the stock';
+                  }
+                  if (int.tryParse(value) == null) {
+                    return 'Please enter a valid whole number';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
+
+              // Product name
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Enter the product name',
-                  labelStyle: AppTextStyles.label,
+                  labelStyle: AppTextStyles.label.copyWith(color: textColor),
+                  hintText: 'Enter the product name',
+                  hintStyle: AppTextStyles.hint.copyWith(color: hintColor),
                 ),
-                style: AppTextStyles.hint,
+                style: AppTextStyles.hint.copyWith(color: textColor),
                 validator: (value) =>
-                value == null || value.isEmpty ? 'Ürün adı girin' : null,
+                value == null || value.isEmpty
+                    ? 'Please enter the product name'
+                    : null,
               ),
               const SizedBox(height: 16),
+
+              // Category
               TextFormField(
                 controller: _categoryController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Enter the category',
-                  labelStyle: AppTextStyles.label,
+                  labelStyle: AppTextStyles.label.copyWith(color: textColor),
+                  hintText: 'Enter the category',
+                  hintStyle: AppTextStyles.hint.copyWith(color: hintColor),
                 ),
-                style: AppTextStyles.hint,
+                style: AppTextStyles.hint.copyWith(color: textColor),
               ),
               const SizedBox(height: 16),
+
+              // Price
               TextFormField(
                 controller: _priceController,
                 keyboardType:
                 const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Enter the price (₺)',
-                  labelStyle: AppTextStyles.label,
+                  labelStyle: AppTextStyles.label.copyWith(color: textColor),
+                  hintText: 'Enter the price (₺)',
+                  hintStyle: AppTextStyles.hint.copyWith(color: hintColor),
                 ),
-                style: AppTextStyles.hint,
+                style: AppTextStyles.hint.copyWith(color: textColor),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the price';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 30),
+
               ElevatedButton.icon(
                 onPressed: _submitForm,
                 icon: const Icon(Icons.add),
