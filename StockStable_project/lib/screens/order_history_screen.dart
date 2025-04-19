@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:navigate_screens/utils/app_colors.dart';
+import 'package:navigate_screens/utils/text_styles.dart';
 import '../utils/theme_manager.dart';
 import '../utils/app_padding.dart';
 
@@ -40,17 +41,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
       appBar: AppBar(
         title: Text(
           'Order History',
-          style: TextStyle(
-            color: Color(0xFF252533),
-            fontSize: 25.0,
-            shadows: [
-              Shadow(
-                offset: Offset(2, 2),
-                blurRadius: 4.0,
-                color: Color(0xFFc6c6c6),
-              ),
-            ],
-          ),
+          style: AppTextStyles.appBarText
         ),
         backgroundColor: AppColors.primaryBlue,
       ),
