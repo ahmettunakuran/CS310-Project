@@ -43,6 +43,13 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           style: TextStyle(
             color: Color(0xFF252533),
             fontSize: 25.0,
+            shadows: [
+              Shadow(
+                offset: Offset(2, 2),
+                blurRadius: 4.0,
+                color: Color(0xFFc6c6c6),
+              ),
+            ],
           ),
         ),
         backgroundColor: AppColors.primaryBlue,
@@ -88,8 +95,10 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                 dropdownColor:
                     _themeManager.isDarkMode ? Color(0xFF353535) : null,
                 style: TextStyle(color: _themeManager.primaryTextColor),
-                icon: Icon(Icons.arrow_drop_down,
-                    color: _themeManager.primaryTextColor),
+                icon: Icon(
+                  Icons.arrow_drop_down,
+                  color: _themeManager.primaryTextColor,
+                ),
                 items: months.map((String value) {
                   return DropdownMenuItem(value: value, child: Text(value));
                 }).toList(),
@@ -108,11 +117,15 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                 itemBuilder: (context, index) {
                   Color cardColor;
                   if (_themeManager.isDarkMode) {
-                    cardColor =
-                        index % 2 == 0 ? Color(0xFF1F4F1F) : Color(0xFF4F1F1F);
+                    // Darker versions of the colors for dark mode
+                    cardColor = index % 2 == 0
+                        ? Color(0xFF1F4F1F)
+                        : Color(0xFF4F1F1F);
                   } else {
-                    cardColor =
-                        index % 2 == 0 ? Colors.green[200]! : Colors.red[200]!;
+                    // Original colors for light mode
+                    cardColor = index % 2 == 0
+                        ? Colors.green[200]!
+                        : Colors.red[200]!;
                   }
 
                   return Card(
