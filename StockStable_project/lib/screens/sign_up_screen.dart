@@ -1,25 +1,43 @@
 import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
+import '../utils/theme_manager.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final ThemeManager _themeManager = ThemeManager();
+
+  @override
+  void initState() {
+    super.initState();
+    _themeManager.addListener(() {
+      if (mounted) setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundWhite,
+      backgroundColor: _themeManager.backgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: ListView(
           children: [
             const SizedBox(height: 60),
 
-            
             Align(
               alignment: Alignment.centerLeft,
               child: IconButton(
-                icon: const Icon(Icons.home, color: AppColors.primaryBlue),
+                icon: Icon(
+                    Icons.home,
+                    color: _themeManager.isDarkMode ? Colors.lightBlue : AppColors.primaryBlue
+                ),
                 onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
               ),
             ),
@@ -55,11 +73,16 @@ class SignUpScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppTextStyles.label),
+        Text(
+            label,
+            style: AppTextStyles.label.copyWith(
+                color: _themeManager.primaryTextColor
+            )
+        ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.fieldBackground,
+            color: _themeManager.isDarkMode ? Color(0xFF353535) : AppColors.fieldBackground,
             borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -72,8 +95,15 @@ class SignUpScreen extends StatelessWidget {
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: hint,
+              hintStyle: TextStyle(
+                color: _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                fontSize: 12,
+              ),
             ),
-            style: const TextStyle(fontSize: 12),
+            style: TextStyle(
+                fontSize: 12,
+                color: _themeManager.primaryTextColor
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -81,4 +111,3 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 }
-
