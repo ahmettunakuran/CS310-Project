@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'utils/theme_manager.dart';
 import 'screens/home_screen.dart';
 import 'screens/out_of_stock_screen.dart';
@@ -14,14 +15,10 @@ import 'screens/delete_product_screen.dart';
 import 'screens/order_history_screen.dart';
 import 'screens/help_screen.dart';
 import 'screens/settings_screen.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp();
   runApp(const StockStableApp());
 }
 
@@ -60,7 +57,7 @@ class _StockStableAppState extends State<StockStableApp> {
       // Force dark mode for all screens
       darkTheme: _themeManager.currentTheme,
       themeMode: _themeManager.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      initialRoute: '/',
+      initialRoute: '/home',
       routes: {
         '/': (context) => const SplashScreen(),
         '/login': (context) => const LoginScreen(),
