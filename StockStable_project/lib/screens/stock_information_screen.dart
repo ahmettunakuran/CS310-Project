@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:navigate_screens/utils/app_colors.dart';
 import 'package:navigate_screens/utils/text_styles.dart';
 import '../utils/app_padding.dart';
@@ -14,14 +15,6 @@ class StockInformationScreen extends StatefulWidget {
 class _StockInformationScreenState extends State<StockInformationScreen> {
   final ThemeManager _themeManager = ThemeManager();
 
-  final List<Map<String, String>> outOfStockProducts = const [
-    {"name": "Product A", "number": "0001", "status": "Low on stock"},
-    {"name": "Product C", "number": "0016", "status": "Low on stock"},
-    {"name": "Product D", "number": "0022", "status": "Low on stock"},
-    {"name": "Product E", "number": "0031", "status": "Low on stock"},
-    {"name": "Product F", "number": "0044", "status": "Low on stock"},
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -33,7 +26,9 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _themeManager.isDarkMode ? _themeManager.backgroundColor : AppColors.backgroundWhite,
+      backgroundColor: _themeManager.isDarkMode
+          ? _themeManager.backgroundColor
+          : AppColors.backgroundWhite,
       appBar: AppBar(
         backgroundColor: AppColors.primaryBlue,
         title: const Text(
@@ -41,51 +36,64 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
           style: AppTextStyles.appBarText,
         ),
       ),
-      body: ListView(
-        padding: AppPadding.all8,
-        children: outOfStockProducts.map((product) {
-          return Card(
-            margin: AppPadding.cardMargin,
-            color: _themeManager.isDarkMode ? _themeManager.cardColor : Colors.white,
-            child: ListTile(
-              title: Text(
-                product["name"]!,
-                style: TextStyle(color: _themeManager.primaryTextColor),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Product No: ${product["number"]}",
-                    style: TextStyle(color: _themeManager.secondaryTextColor),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('products')
+            .where('amount', isGreaterThan: 0) // 🔍 Only in-stock items
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text("Error loading data."));
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final products = snapshot.data!.docs;
+
+          if (products.isEmpty) {
+            return const Center(
+              child: Text("No products in stock.", style: AppTextStyles.hint),
+            );
+          }
+
+          return ListView.builder(
+            padding: AppPadding.all8,
+            itemCount: products.length,
+            itemBuilder: (context, index) {
+              final data = products[index].data() as Map<String, dynamic>;
+
+              return Card(
+                margin: AppPadding.cardMargin,
+                color: _themeManager.isDarkMode
+                    ? _themeManager.cardColor
+                    : Colors.white,
+                child: ListTile(
+                  title: Text(
+                    data["name"] ?? '',
+                    style: TextStyle(color: _themeManager.primaryTextColor),
                   ),
-                  Text(
-                    "Stock Status: ${product["status"]}",
-                    style: TextStyle(color: _themeManager.secondaryTextColor),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Product No: ${data["number"] ?? ''}",
+                        style:
+                            TextStyle(color: _themeManager.secondaryTextColor),
+                      ),
+                      Text(
+                        "Stock Status: ${data["amount"]}",
+                        style:
+                            TextStyle(color: _themeManager.secondaryTextColor),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           );
-        }).toList(),
-      ),
-      bottomNavigationBar: Container(
-        color: _themeManager.isDarkMode ? _themeManager.backgroundColor : AppColors.backgroundWhite,
-        padding: AppPadding.bottomButton,
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pushNamed(context, "/addItem");
-          },
-          style: ElevatedButton.styleFrom(
-            padding: AppPadding.vertical16,
-            shape: const StadiumBorder(),
-            backgroundColor: AppColors.primaryBlue,
-          ),
-          child: const Text(
-            "Add Item",
-            style: AppTextStyles.smallButtonWhiteText,
-          ),
-        ),
+        },
       ),
     );
   }

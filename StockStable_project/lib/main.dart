@@ -57,7 +57,7 @@ class _StockStableAppState extends State<StockStableApp> {
       // Force dark mode for all screens
       darkTheme: _themeManager.currentTheme,
       themeMode: _themeManager.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      initialRoute: '/home',
+      initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),
         '/login': (context) => const LoginScreen(),
