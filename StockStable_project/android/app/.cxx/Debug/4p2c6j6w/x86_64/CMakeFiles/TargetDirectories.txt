@@ -1,0 +1,2 @@
+/Users/ozan_mac/Desktop/CS310-Project-ozann/StockStable_project/android/app/.cxx/Debug/4p2c6j6w/x86_64/CMakeFiles/edit_cache.dir
+/Users/ozan_mac/Desktop/CS310-Project-ozann/StockStable_project/android/app/.cxx/Debug/4p2c6j6w/x86_64/CMakeFiles/rebuild_cache.dir
