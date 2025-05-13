@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
 import '../utils/theme_manager.dart';
@@ -35,6 +36,23 @@ class _LoginScreenState extends State<LoginScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('OK'),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: _themeManager.isDarkMode ? _themeManager.cardColor : Colors.white,
+        title: Text('Error', style: TextStyle(color: _themeManager.primaryTextColor)),
+        content: Text(message, style: TextStyle(color: _themeManager.primaryTextColor)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK', style: TextStyle(color: _themeManager.isDarkMode ? Colors.lightBlue : AppColors.primaryBlue)),
           )
         ],
       ),
@@ -136,9 +154,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     backgroundColor: AppColors.primaryBlue,
                     padding: AppPadding.vertical12,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      Navigator.pushReplacementNamed(context, '/home');
+                      try {
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                          email: usernameController.text.trim(),
+                          password: passwordController.text.trim(),
+                        );
+                        Navigator.pushReplacementNamed(context, '/home');
+                      } on FirebaseAuthException catch (e) {
+                        _showErrorDialog(e.message ?? 'Login failed');
+                      }
                     } else {
                       _showInvalidFormDialog();
                     }
@@ -205,4 +231,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-

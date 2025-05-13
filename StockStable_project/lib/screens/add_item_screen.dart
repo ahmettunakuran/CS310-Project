@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:navigate_screens/utils/app_colors.dart';
 import 'package:navigate_screens/utils/text_styles.dart';
 import '../utils/app_padding.dart';
+import '../services/product_service.dart';
 
 class AddItemScreen extends StatefulWidget {
   const AddItemScreen({super.key});
@@ -18,7 +19,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final _priceController = TextEditingController();
   final _categoryController = TextEditingController();
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     final isValid = _formKey.currentState!.validate();
 
     if (!isValid) {
@@ -31,14 +32,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
     final price = double.tryParse(_priceController.text) ?? 0.0;
     final category = _categoryController.text;
 
-    final newProduct = {
-      'name': name,
-      'amount': stock,
-      'price': price,
-      'category': category,
-    };
+    await addProductToFirestore(
+      name: name,
+      amount: stock,
+      price: price,
+      category: category,
+    );
 
-    Navigator.pop(context, newProduct);
+    Navigator.pop(context);
   }
 
   void _showValidationDialog() {
@@ -124,8 +125,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   hintStyle: AppTextStyles.hint.copyWith(color: hintColor),
                 ),
                 style: AppTextStyles.hint.copyWith(color: textColor),
-                validator: (value) =>
-                value == null || value.isEmpty
+                validator: (value) => value == null || value.isEmpty
                     ? 'Please enter the product name'
                     : null,
               ),
@@ -148,7 +148,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               TextFormField(
                 controller: _priceController,
                 keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
+                    const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
                   labelText: 'Enter the price (₺)',
                   labelStyle: AppTextStyles.label.copyWith(color: textColor),

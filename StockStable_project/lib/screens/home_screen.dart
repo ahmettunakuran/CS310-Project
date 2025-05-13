@@ -4,6 +4,7 @@ import '../widgets/custom_drawer.dart';
 import '../utils/theme_manager.dart';
 import '../utils/app_padding.dart';
 import '../utils/text_styles.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -105,21 +106,43 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            Card(
-              margin: AppPadding.cardMargin,
-              elevation: 2,
-              color: _themeManager.cardColor,
-              child: ListTile(
-                title: Text(
-                  'Product Name',
-                  style: TextStyle(color: _themeManager.primaryTextColor),
-                ),
-                subtitle: Text(
-                  'ProductNo • Price',
-                  style: TextStyle(color: _themeManager.secondaryTextColor),
-                ),
-              ),
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('products')
+                  .where('amount', isEqualTo: 0)
+                  .limit(2)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) return Text('Error loading data');
+                if (!snapshot.hasData) return CircularProgressIndicator();
+
+                final products = snapshot.data!.docs;
+
+                return Column(
+                  children: products.map((doc) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    return Card(
+                      margin: AppPadding.cardMargin,
+                      elevation: 2,
+                      color: _themeManager.cardColor,
+                      child: ListTile(
+                        title: Text(
+                          data['name'],
+                          style:
+                              TextStyle(color: _themeManager.primaryTextColor),
+                        ),
+                        subtitle: Text(
+                          'Price: ₺${data['price']}',
+                          style: TextStyle(
+                              color: _themeManager.secondaryTextColor),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
             ),
+
             const SizedBox(height: 20),
 
             // Stock Information Section Header
@@ -144,20 +167,42 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            Card(
-              margin: AppPadding.cardMargin,
-              elevation: 2,
-              color: _themeManager.cardColor,
-              child: ListTile(
-                title: Text(
-                  'Product Name',
-                  style: TextStyle(color: _themeManager.primaryTextColor),
-                ),
-                subtitle: Text(
-                  'ProductNo • Stock Status',
-                  style: TextStyle(color: _themeManager.secondaryTextColor),
-                ),
-              ),
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('products')
+                  .limit(2)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) return Text('Error loading data');
+                if (!snapshot.hasData) return CircularProgressIndicator();
+
+                final products = snapshot.data!.docs;
+
+                return Column(
+                  children: products.map((doc) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    final status =
+                        data['amount'] == 0 ? 'Out of stock' : 'In stock';
+                    return Card(
+                      margin: AppPadding.cardMargin,
+                      elevation: 2,
+                      color: _themeManager.cardColor,
+                      child: ListTile(
+                        title: Text(
+                          data['name'],
+                          style:
+                              TextStyle(color: _themeManager.primaryTextColor),
+                        ),
+                        subtitle: Text(
+                          'Amount: ${data['amount']} • Status: $status',
+                          style: TextStyle(
+                              color: _themeManager.secondaryTextColor),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
             ),
           ],
         ),

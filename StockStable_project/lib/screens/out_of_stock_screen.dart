@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:navigate_screens/utils/app_colors.dart';
 import 'package:navigate_screens/utils/text_styles.dart';
 import '../utils/app_padding.dart';
@@ -14,11 +15,6 @@ class OutOfStockScreen extends StatefulWidget {
 class _OutOfStockScreenState extends State<OutOfStockScreen> {
   final ThemeManager _themeManager = ThemeManager();
 
-  final List<Map<String, String>> outOfStockProducts = const [
-    {"name": "Product A", "number": "0001", "price": "\$15"},
-    {"name": "Product C", "number": "0016", "price": "\$300"},
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -30,7 +26,9 @@ class _OutOfStockScreenState extends State<OutOfStockScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _themeManager.isDarkMode ? _themeManager.backgroundColor : AppColors.backgroundWhite,
+      backgroundColor: _themeManager.isDarkMode
+          ? _themeManager.backgroundColor
+          : AppColors.backgroundWhite,
       appBar: AppBar(
         backgroundColor: AppColors.primaryBlue,
         title: const Text(
@@ -38,36 +36,66 @@ class _OutOfStockScreenState extends State<OutOfStockScreen> {
           style: AppTextStyles.appBarText,
         ),
       ),
-      body: ListView(
-        padding: AppPadding.all8,
-        children: outOfStockProducts.map((product) {
-          return Card(
-            margin: AppPadding.cardMargin,
-            color: _themeManager.isDarkMode ? _themeManager.cardColor : Colors.white,
-            child: ListTile(
-              title: Text(
-                product["name"]!,
-                style: TextStyle(color: _themeManager.primaryTextColor),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Number: ${product["number"]}",
-                    style: TextStyle(color: _themeManager.secondaryTextColor),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('products')
+            .where('amount', isEqualTo: 0)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text("Error fetching data"));
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final outOfStock = snapshot.data!.docs;
+
+          if (outOfStock.isEmpty) {
+            return const Center(child: Text("No out of stock products."));
+          }
+
+          return ListView.builder(
+            padding: AppPadding.all8,
+            itemCount: outOfStock.length,
+            itemBuilder: (context, index) {
+              final data = outOfStock[index].data() as Map<String, dynamic>;
+
+              return Card(
+                margin: AppPadding.cardMargin,
+                color: _themeManager.isDarkMode
+                    ? _themeManager.cardColor
+                    : Colors.white,
+                child: ListTile(
+                  title: Text(
+                    data['name'] ?? 'Unknown',
+                    style: TextStyle(color: _themeManager.primaryTextColor),
                   ),
-                  Text(
-                    "Price: ${product["price"]}",
-                    style: TextStyle(color: _themeManager.secondaryTextColor),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Number: ${data['id'] ?? 'N/A'}",
+                        style:
+                            TextStyle(color: _themeManager.secondaryTextColor),
+                      ),
+                      Text(
+                        "Price: ₺${data['price']?.toStringAsFixed(2) ?? 'N/A'}",
+                        style:
+                            TextStyle(color: _themeManager.secondaryTextColor),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           );
-        }).toList(),
+        },
       ),
       bottomNavigationBar: Container(
-        color: _themeManager.isDarkMode ? _themeManager.backgroundColor : AppColors.backgroundWhite,
+        color: _themeManager.isDarkMode
+            ? _themeManager.backgroundColor
+            : AppColors.backgroundWhite,
         padding: AppPadding.bottomButton,
         child: ElevatedButton(
           onPressed: () {

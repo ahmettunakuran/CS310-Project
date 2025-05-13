@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:navigate_screens/utils/app_colors.dart';
 import 'package:navigate_screens/utils/text_styles.dart';
 import 'add_item_screen.dart';
@@ -12,13 +13,24 @@ class InventoryScreen extends StatefulWidget {
 }
 
 class InventoryScreenState extends State<InventoryScreen> {
-  static List<Map<String, dynamic>> products = [];
+  final CollectionReference _productsRef =
+      FirebaseFirestore.instance.collection('products');
 
-  static void addProduct(Map<String, dynamic> product) {
-    products.add(product);
+  Future<void> _deleteProduct(String docId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('products')
+          .doc(docId)
+          .delete();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Product deleted')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete: $e')),
+      );
+    }
   }
-
-  static List<Map<String, dynamic>> getProducts() => products;
 
   void _showProductInfo(Map<String, dynamic> product) {
     showDialog(
@@ -39,6 +51,75 @@ class InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
+  void _showUpdateDialog(Map<String, dynamic> product, String docId) {
+    final TextEditingController nameController =
+        TextEditingController(text: product['name']);
+    final TextEditingController amountController =
+        TextEditingController(text: product['amount'].toString());
+    final TextEditingController priceController =
+        TextEditingController(text: product['price'].toString());
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Update Product"),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Product Name'),
+                ),
+                TextField(
+                  controller: amountController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Amount'),
+                ),
+                TextField(
+                  controller: priceController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(labelText: 'Price (₺)'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final updatedName = nameController.text.trim();
+                final updatedAmount =
+                    int.tryParse(amountController.text.trim());
+                final updatedPrice =
+                    double.tryParse(priceController.text.trim());
+
+                if (updatedName.isNotEmpty &&
+                    updatedAmount != null &&
+                    updatedPrice != null) {
+                  await FirebaseFirestore.instance
+                      .collection('products')
+                      .doc(docId)
+                      .update({
+                    'name': updatedName,
+                    'amount': updatedAmount,
+                    'price': updatedPrice,
+                  });
+
+                  Navigator.pop(context); // Close the dialog
+                }
+              },
+              child: const Text('Update'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _navigateToAddItem() async {
     final newProduct = await Navigator.push(
       context,
@@ -46,13 +127,11 @@ class InventoryScreenState extends State<InventoryScreen> {
     );
 
     if (newProduct != null) {
-      setState(() {
-        products.add(newProduct as Map<String, dynamic>);
-      });
+      setState(() {}); // Triggers refresh after adding
     }
   }
 
-  Widget _buildProductCard(Map<String, dynamic> product, int index) {
+  Widget _buildProductCard(Map<String, dynamic> product, String docId) {
     return Card(
       margin: AppPadding.listPadding,
       child: ListTile(
@@ -72,15 +151,33 @@ class InventoryScreenState extends State<InventoryScreen> {
           children: [
             Text('Amount: ${product['amount']}', style: AppTextStyles.hint),
             Text('Price: ₺${product['price']}', style: AppTextStyles.hint),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pushNamed(context, '/deleteItem');
-              },
-              icon: const Icon(Icons.delete, size: 16),
-              label: const Text('Delete', style: AppTextStyles.smallButtonWhiteText),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.deleteRed,
-              ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    _deleteProduct(docId);
+                  },
+                  icon: const Icon(Icons.delete, size: 16),
+                  label: const Text('Delete',
+                      style: AppTextStyles.smallButtonWhiteText),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.deleteRed,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    _showUpdateDialog(product, docId);
+                  },
+                  icon: const Icon(Icons.edit, size: 16),
+                  label: const Text('Update',
+                      style: AppTextStyles.smallButtonWhiteText),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.buttonYellow,
+                  ),
+                ),
+              ],
             )
           ],
         ),
@@ -99,14 +196,34 @@ class InventoryScreenState extends State<InventoryScreen> {
         title: const Text("INVENTORY", style: AppTextStyles.appBarText),
         backgroundColor: AppColors.primaryBlue,
       ),
-      body: products.isEmpty
-          ? const Center(
-        child: Text("No products yet.", style: AppTextStyles.hint),
-      )
-          : ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (context, index) =>
-            _buildProductCard(products[index], index),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _productsRef.orderBy('createdAt', descending: true).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text('Something went wrong'));
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final products = snapshot.data!.docs;
+
+          if (products.isEmpty) {
+            return const Center(
+              child: Text("No products yet.", style: AppTextStyles.hint),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: products.length,
+            itemBuilder: (context, index) {
+              final doc = products[index];
+              return _buildProductCard(
+                  doc.data() as Map<String, dynamic>, doc.id);
+            },
+          );
+        },
       ),
       bottomNavigationBar: Padding(
         padding: AppPadding.all16,

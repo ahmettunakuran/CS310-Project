@@ -25,10 +25,15 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Delete Product', style: AppTextStyles.appBarText,),
+        title: Text(
+          'Delete Product',
+          style: AppTextStyles.appBarText,
+        ),
         backgroundColor: AppColors.primaryBlue,
       ),
-      backgroundColor: _themeManager.isDarkMode ? _themeManager.backgroundColor : AppColors.backgroundWhite,
+      backgroundColor: _themeManager.isDarkMode
+          ? _themeManager.backgroundColor
+          : AppColors.backgroundWhite,
       body: Padding(
         padding: AppPadding.all16,
         child: Column(
@@ -46,7 +51,9 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
               width: 200,
               height: 200,
               child: Placeholder(
-                color: _themeManager.isDarkMode ? Colors.grey[600]! : Colors.grey[400]!,
+                color: _themeManager.isDarkMode
+                    ? Colors.grey[600]!
+                    : Colors.grey[400]!,
               ),
             ),
             Text(
@@ -66,11 +73,15 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
               decoration: InputDecoration(
                 labelText: 'Amount to be deleted',
                 labelStyle: TextStyle(
-                  color: _themeManager.isDarkMode ? Colors.grey[300] : Colors.grey[600],
+                  color: _themeManager.isDarkMode
+                      ? Colors.grey[300]
+                      : Colors.grey[600],
                 ),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: _themeManager.isDarkMode ? Colors.grey[600]! : Colors.grey[400]!,
+                    color: _themeManager.isDarkMode
+                        ? Colors.grey[600]!
+                        : Colors.grey[400]!,
                   ),
                 ),
                 focusedBorder: UnderlineInputBorder(
