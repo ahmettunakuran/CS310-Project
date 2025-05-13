@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 import 'utils/theme_manager.dart';
 import 'screens/home_screen.dart';
 import 'screens/out_of_stock_screen.dart';
@@ -18,7 +20,9 @@ import 'screens/settings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform, // ✅ Web için gerekli
+  );
   runApp(const StockStableApp());
 }
 
