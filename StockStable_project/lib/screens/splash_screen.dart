@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
-import '../utils/app_colors.dart';
-import '../utils/app_padding.dart';
+
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pushReplacementNamed(context, '/login');
+    // AuthProvider’daki durum
+    final isLoggedIn = context.watch<AuthProvider>().isLoggedIn;
+
+    // Build tamamlandıktan hemen sonra yönlendirme yap
+    Future.microtask(() {
+      Navigator.pushReplacementNamed(
+        context,
+        isLoggedIn ? '/home' : '/login',
+      );
     });
 
-    return Scaffold(
-      backgroundColor: AppColors.backgroundWhite,
-      body: Center(
-        child: Padding(
-          padding: AppPadding.all16,
-          child: Image.asset(
-            'lib/assets/stock_stable_logo.png',
-            width: 200,
-          ),
-        ),
-      ),
+    // Kullanıcı yönlendirilene kadar basit bir yükleme animasyonu göster
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
     );
   }
 }
+

@@ -5,6 +5,12 @@ import '../utils/text_styles.dart';
 import '../utils/theme_manager.dart';
 import '../utils/app_padding.dart';
 
+import '../providers/auth_provider.dart' as my;
+import 'package:provider/provider.dart';
+
+// Firebase import stays as‑is
+import 'package:firebase_auth/firebase_auth.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -154,21 +160,27 @@ class _LoginScreenState extends State<LoginScreen> {
                     backgroundColor: AppColors.primaryBlue,
                     padding: AppPadding.vertical12,
                   ),
+
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       try {
-                        await FirebaseAuth.instance.signInWithEmailAndPassword(
-                          email: usernameController.text.trim(),
-                          password: passwordController.text.trim(),
+                        await context.read<my.AuthProvider>().signIn(
+                          usernameController.text.trim(),
+                          passwordController.text.trim(),
                         );
+
+                        // Yönlendirme mantığını korumak isterseniz:
                         Navigator.pushReplacementNamed(context, '/home');
-                      } on FirebaseAuthException catch (e) {
-                        _showErrorDialog(e.message ?? 'Login failed');
+                        // Eğer SplashScreen yönlendirsin diyorsanız yukarıdaki satırı silebilirsiniz.
+
+                      } catch (e) {
+                        _showErrorDialog(e.toString());
                       }
                     } else {
                       _showInvalidFormDialog();
                     }
-                  },
+                  }
+                  ,
                   child: Text('Log in', style: AppTextStyles.buttonText),
                 ),
               ),

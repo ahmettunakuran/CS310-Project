@@ -4,6 +4,11 @@ import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
 import '../utils/app_padding.dart';
 import '../utils/theme_manager.dart';
+import '../providers/auth_provider.dart' as my;
+import 'package:provider/provider.dart';
+
+// Firebase import stays as‑is
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -144,14 +149,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       try {
-                        await FirebaseAuth.instance
-                            .createUserWithEmailAndPassword(
+                        await context.read<my.AuthProvider>().signUp(
                           email: _emailController.text.trim(),
                           password: _passwordController.text.trim(),
+                          username: _usernameController.text.trim(),
+                          phone: _phoneController.text.trim(),
                         );
-                        Navigator.pushReplacementNamed(context, '/login');
-                      } on FirebaseAuthException catch (e) {
-                        _showErrorDialog(e.message ?? 'An error occurred');
+                        // SplashScreen yönlendiriyorsa aşağıdaki satırı silebilirsiniz
+                        Navigator.pushReplacementNamed(context, '/home');
+                      } catch (e) {
+                        _showErrorDialog(e.toString());
                       }
                     } else {
                       _showInvalidFormDialog();

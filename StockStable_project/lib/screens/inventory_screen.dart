@@ -5,6 +5,10 @@ import 'package:navigate_screens/utils/app_colors.dart';
 import 'package:navigate_screens/utils/text_styles.dart';
 import 'add_item_screen.dart';
 import '../utils/app_padding.dart';
+import 'package:provider/provider.dart';
+import '../providers/product_provider.dart';
+import '../models/product.dart';
+
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -14,7 +18,8 @@ class InventoryScreen extends StatefulWidget {
 }
 
 class InventoryScreenState extends State<InventoryScreen> {
-  Stream<QuerySnapshot> _getUserProducts() {
+
+  /*Stream<QuerySnapshot> _getUserProducts() {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       throw Exception('User must be logged in to view products');
@@ -26,8 +31,8 @@ class InventoryScreenState extends State<InventoryScreen> {
         .collection('products')
         .orderBy('createdAt', descending: true)
         .snapshots();
-  }
-
+  }*/
+/*
   Future<void> _deleteProduct(String docId) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -49,15 +54,27 @@ class InventoryScreenState extends State<InventoryScreen> {
         SnackBar(content: Text('Failed to delete: $e')),
       );
     }
+  }*/
+  Future<void> _deleteProduct(String docId) async {
+    try {
+      await context.read<ProductProvider>().deleteProduct(docId);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Product deleted')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete: $e')),
+      );
+    }
   }
 
-  void _showProductInfo(Map<String, dynamic> product) {
+  void _showProductInfo(Product product) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(product['name'], style: AppTextStyles.label),
+        title: Text(product.name, style: AppTextStyles.label),
         content: Text(
-          "Amount: ${product['amount']}\nPrice: ₺${product['price']}",
+          "Amount: ${product.amount}\nPrice: ₺${product.price}",
           style: AppTextStyles.hint,
         ),
         actions: [
@@ -147,7 +164,7 @@ class InventoryScreenState extends State<InventoryScreen> {
     }
   }
 
-  Widget _buildProductCard(Map<String, dynamic> product, String docId) {
+  Widget _buildProductCard(Product product) {
     return Card(
       margin: AppPadding.listPadding,
       child: ListTile(
@@ -159,20 +176,20 @@ class InventoryScreenState extends State<InventoryScreen> {
           child: const Icon(Icons.image, color: AppColors.greyCol),
         ),
         title: Text(
-          'Product Name: ${product['name']}',
+          'Product Name: ${product.name}',
           style: AppTextStyles.label,
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Amount: ${product['amount']}', style: AppTextStyles.hint),
-            Text('Price: ₺${product['price']}', style: AppTextStyles.hint),
+            Text('Amount: ${product.amount}', style: AppTextStyles.hint),
+            Text('Price: ₺${product.price}', style: AppTextStyles.hint),
             const SizedBox(height: 8),
             Row(
               children: [
                 ElevatedButton.icon(
                   onPressed: () {
-                    _deleteProduct(docId);
+                    _deleteProduct(product.id);
                   },
                   icon: const Icon(Icons.delete, size: 16),
                   label: const Text('Delete', style: AppTextStyles.smallButtonWhiteText),
@@ -183,7 +200,11 @@ class InventoryScreenState extends State<InventoryScreen> {
                 const SizedBox(width: 8),
                 ElevatedButton.icon(
                   onPressed: () {
-                    _showUpdateDialog(product, docId);
+                    _showUpdateDialog({
+                      'name':   product.name,
+                      'amount': product.amount,
+                      'price':  product.price,
+                    }, product.id);
                   },
                   icon: const Icon(Icons.edit, size: 16),
                   label: const Text('Update', style: AppTextStyles.smallButtonWhiteText),
@@ -205,23 +226,28 @@ class InventoryScreenState extends State<InventoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final ProductProvider? provider = context.watch<ProductProvider?>();
     return Scaffold(
       appBar: AppBar(
         title: const Text("INVENTORY", style: AppTextStyles.appBarText),
         backgroundColor: AppColors.primaryBlue,
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _getUserProducts(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(child: Text('Something went wrong'));
-          }
 
+
+      body: provider == null
+          ? const Center(child: CircularProgressIndicator())
+          : StreamBuilder<List<Product>>(
+        stream: provider.products,
+        builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
 
-          final products = snapshot.data!.docs;
+          final products = snapshot.data ?? [];
 
           if (products.isEmpty) {
             return const Center(
@@ -231,10 +257,7 @@ class InventoryScreenState extends State<InventoryScreen> {
 
           return ListView.builder(
             itemCount: products.length,
-            itemBuilder: (context, index) {
-              final doc = products[index];
-              return _buildProductCard(doc.data() as Map<String, dynamic>, doc.id);
-            },
+            itemBuilder: (_, i) => _buildProductCard(products[i]),
           );
         },
       ),

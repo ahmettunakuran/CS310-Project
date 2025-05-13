@@ -17,13 +17,39 @@ import 'screens/delete_product_screen.dart';
 import 'screens/order_history_screen.dart';
 import 'screens/help_screen.dart';
 import 'screens/settings_screen.dart';
+import '../providers/order_provider.dart';
+import 'package:provider/provider.dart';
+import 'providers/auth_provider.dart';
+import 'providers/product_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform, // ✅ Web için gerekli
+    options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const StockStableApp());
+
+  runApp(
+    MultiProvider(
+      providers: [
+        // Kimlik doğrulama durumunu yöneten ChangeNotifier
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+
+        // Kullanıcı oturum açıksa ProductProvider’ı enjekte eder
+        ChangeNotifierProxyProvider<AuthProvider, ProductProvider?>(
+          create: (_) => null,                                       // placeholder YOK
+          update: (_, auth, __) =>
+          auth.user == null ? null : ProductProvider(uid: auth.user!.uid),
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, OrderProvider?>(
+          create: (_) => null,
+          update: (_, auth, __) =>
+          auth.user == null ? null : OrderProvider(uid: auth.user!.uid),
+        ),
+
+      ],
+      child: const StockStableApp(),
+    ),
+  );
 }
 
 class StockStableApp extends StatefulWidget {
