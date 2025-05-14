@@ -1,10 +1,7 @@
-// lib/screens/barcode_scanner_screen.dart
 import 'package:flutter/material.dart';
-import 'package:navigate_screens/utils/app_colors.dart';
-import 'package:navigate_screens/utils/text_styles.dart';
-import '../utils/app_padding.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'dart:io';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import '../utils/app_colors.dart';
+import '../utils/text_styles.dart';
 
 class BarcodeScannerScreen extends StatefulWidget {
   const BarcodeScannerScreen({super.key});
@@ -14,18 +11,22 @@ class BarcodeScannerScreen extends StatefulWidget {
 }
 
 class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  QRViewController? controller;
-  String? qrText;
+  bool _isScanned = false;
+  late final MobileScannerController _cameraController;
 
-  // In order to get hot reload to work we need to pause the camera if the platform is android
   @override
-  void reassemble() {
-    super.reassemble();
-    if (Platform.isAndroid) {
-      controller?.pauseCamera();
-    }
-    controller?.resumeCamera();
+  void initState() {
+    super.initState();
+    _cameraController = MobileScannerController(
+      detectionSpeed: DetectionSpeed.normal,
+      facing: CameraFacing.back,
+    );
+  }
+
+  @override
+  void dispose() {
+    _cameraController.dispose();
+    super.dispose();
   }
 
   @override
@@ -34,55 +35,37 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primaryBlue,
         title: const Text(
-          "QR Code Scanner",
+          "QR Kod Tarayıcı",
           style: AppTextStyles.appBarText,
         ),
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 5,
-            child: QRView(
-              key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
-              overlay: QrScannerOverlayShape(
-                borderColor: Colors.blue,
-                borderRadius: 10,
-                borderLength: 30,
-                borderWidth: 10,
-                cutOutSize: 250,
-              ),
-            ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.flip_camera_ios),
+            onPressed: () => _cameraController.switchCamera(),
           ),
-          Expanded(
-            flex: 1,
-            child: Center(
-              child: (qrText != null)
-                  ? Text('Result: $qrText')
-                  : const Text('Scan a code'),
-            ),
-          )
+          IconButton(
+            icon: const Icon(Icons.flash_on),
+            onPressed: () => _cameraController.toggleTorch(),
+          ),
         ],
       ),
+      body: MobileScanner(
+        controller: _cameraController,
+        onDetect: (BarcodeCapture capture) {
+          if (!_isScanned) {
+            final List<Barcode> barcodes = capture.barcodes;
+            if (barcodes.isNotEmpty) {
+              final String? code = barcodes.first.rawValue;
+              if (code != null) {
+                setState(() {
+                  _isScanned = true;
+                });
+                Navigator.pop(context, code);
+              }
+            }
+          }
+        },
+      ),
     );
-  }
-
-  void _onQRViewCreated(QRViewController controller) {
-    this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
-      if (qrText == null) {
-        setState(() {
-          qrText = scanData.code;
-        });
-        controller.pauseCamera();
-        Navigator.pop(context, qrText);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
   }
 }

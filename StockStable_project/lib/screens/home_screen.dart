@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:navigate_screens/utils/app_colors.dart';
 import '../widgets/custom_drawer.dart';
 import '../utils/theme_manager.dart';
+import '../utils/app_colors.dart';
 import '../utils/app_padding.dart';
 import '../utils/text_styles.dart';
 
@@ -19,10 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Stream<QuerySnapshot> _getUserOutOfStockProducts() {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw Exception('User must be logged in to view products');
-    }
-
+    if (user == null) throw Exception('User not logged in');
     return FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
@@ -34,10 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Stream<QuerySnapshot> _getUserProducts() {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw Exception('User must be logged in to view products');
-    }
-
+    if (user == null) throw Exception('User not logged in');
     return FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
@@ -52,6 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
     _themeManager.addListener(() {
       if (mounted) setState(() {});
     });
+  }
+
+  @override
+  void dispose() {
+    _themeManager.removeListener(() {});
+    super.dispose();
   }
 
   @override
@@ -91,182 +91,143 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Chart Placeholder
-            Container(
-              height: 200,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.placeholderGrey,
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: const Center(
-                child: Text(
-                  'Pie Chart Placeholder',
-                  style: AppTextStyles.label,
-                ),
-              ),
-            ),
+            _buildPlaceholderChart(),
             const SizedBox(height: 20),
-
-            // Out of Stock Section Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Out Of Stock',
-                    style: AppTextStyles.label.copyWith(
-                      color: _themeManager.primaryTextColor,
-                    )),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/outOfStock');
-                  },
-                  child: Text(
-                    'View all',
-                    style: AppTextStyles.viewAll.copyWith(
-                      color: _themeManager.isDarkMode ? Colors.lightBlue : Colors.blue,
-                    ),
-                  ),
-                ),
-              ],
+            _buildSectionHeader(
+              title: 'Out Of Stock',
+              onViewAllPressed: () => Navigator.pushNamed(context, '/outOfStock'),
             ),
-            const SizedBox(height: 8),
-            StreamBuilder<QuerySnapshot>(
-              stream: _getUserOutOfStockProducts(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) return Text('Error loading data');
-                if (!snapshot.hasData) return CircularProgressIndicator();
-
-                final products = snapshot.data!.docs;
-
-                return Column(
-                  children: products.map((doc) {
-                    final data = doc.data() as Map<String, dynamic>;
-                    return Card(
-                      margin: AppPadding.cardMargin,
-                      elevation: 2,
-                      color: _themeManager.cardColor,
-                      child: ListTile(
-                        title: Text(
-                          data['name'],
-                          style: TextStyle(color: _themeManager.primaryTextColor),
-                        ),
-                        subtitle: Text(
-                          'Price: ₺${data['price']}',
-                          style: TextStyle(color: _themeManager.secondaryTextColor),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-            ),
-
+            _buildProductList(_getUserOutOfStockProducts()),
             const SizedBox(height: 20),
-
-            // Stock Information Section Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Stock Information',
-                    style: AppTextStyles.label.copyWith(
-                      color: _themeManager.primaryTextColor,
-                    )),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/stockInfo');
-                  },
-                  child: Text('View all',
-                      style: AppTextStyles.viewAll.copyWith(
-                        color: _themeManager.isDarkMode ? Colors.lightBlue : Colors.blue,
-                      )),
-                ),
-              ],
+            _buildSectionHeader(
+              title: 'Stock Information',
+              onViewAllPressed: () => Navigator.pushNamed(context, '/stockInfo'),
             ),
-            const SizedBox(height: 8),
-            StreamBuilder<QuerySnapshot>(
-              stream: _getUserProducts(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) return Text('Error loading data');
-                if (!snapshot.hasData) return CircularProgressIndicator();
-
-                final products = snapshot.data!.docs;
-
-                return Column(
-                  children: products.map((doc) {
-                    final data = doc.data() as Map<String, dynamic>;
-                    final status = data['amount'] == 0 ? 'Out of stock' : 'In stock';
-                    return Card(
-                      margin: AppPadding.cardMargin,
-                      elevation: 2,
-                      color: _themeManager.cardColor,
-                      child: ListTile(
-                        title: Text(
-                          data['name'],
-                          style: TextStyle(color: _themeManager.primaryTextColor),
-                        ),
-                        subtitle: Text(
-                          'Amount: ${data['amount']} • Status: $status',
-                          style: TextStyle(color: _themeManager.secondaryTextColor),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-            ),
+            _buildProductList(_getUserProducts()),
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        color: _themeManager.backgroundColor,
-        padding: AppPadding.vertical12.add(AppPadding.horizontal16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Add Item button
-            Expanded(
-              child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/addItem');
-                  },
-                  style: ElevatedButton.styleFrom(
-                      padding: AppPadding.vertical12,
-                      shape: const StadiumBorder(),
-                      backgroundColor: AppColors.primaryBlue),
-                  child: const Text(
-                    'Add Item',
-                    style: AppTextStyles.smallButtonWhiteText,
-                  )),
+      bottomNavigationBar: _buildBottomBar(),
+    );
+  }
+
+  Widget _buildPlaceholderChart() {
+    return Container(
+      height: 200,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColors.placeholderGrey,
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: const Center(
+        child: Text(
+          'Pie Chart Placeholder',
+          style: AppTextStyles.label,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader({required String title, required VoidCallback onViewAllPressed}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: AppTextStyles.label.copyWith(color: _themeManager.primaryTextColor),
+        ),
+        TextButton(
+          onPressed: onViewAllPressed,
+          child: Text(
+            'View all',
+            style: AppTextStyles.viewAll.copyWith(
+              color: _themeManager.isDarkMode ? Colors.lightBlue : Colors.blue,
             ),
-            const SizedBox(width: 8),
-            // Barcode Scanner button
-            FloatingActionButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/barcodeScanner');
-              },
-              backgroundColor: AppColors.buttonYellow,
-              child: const Icon(Icons.qr_code, color: Colors.black),
-            ),
-            const SizedBox(width: 8),
-            // Delete Item button
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/deleteProduct');
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: AppPadding.vertical12,
-                  shape: const StadiumBorder(),
-                  backgroundColor: AppColors.deleteRed,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProductList(Stream<QuerySnapshot> stream) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: stream,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) return const Text('Error loading data');
+        if (!snapshot.hasData) return const CircularProgressIndicator();
+
+        final products = snapshot.data!.docs;
+
+        return Column(
+          children: products.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            final status = data['amount'] == 0 ? 'Out of stock' : 'In stock';
+            return Card(
+              margin: AppPadding.cardMargin,
+              elevation: 2,
+              color: _themeManager.cardColor,
+              child: ListTile(
+                title: Text(
+                  data['name'],
+                  style: TextStyle(color: _themeManager.primaryTextColor),
                 ),
-                child: const Text(
-                  'Delete Item',
-                  style: AppTextStyles.smallButtonWhiteText,
+                subtitle: Text(
+                  'Price: ₺${data['price']} • Amount: ${data['amount']} • Status: $status',
+                  style: TextStyle(color: _themeManager.secondaryTextColor),
                 ),
               ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  Widget _buildBottomBar() {
+    return Container(
+      color: _themeManager.backgroundColor,
+      padding: AppPadding.vertical12.add(AppPadding.horizontal16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/addItem'),
+              style: ElevatedButton.styleFrom(
+                padding: AppPadding.vertical12,
+                shape: const StadiumBorder(),
+                backgroundColor: AppColors.primaryBlue,
+              ),
+              child: const Text('Add Item', style: AppTextStyles.smallButtonWhiteText),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 8),
+          FloatingActionButton(
+            onPressed: () async {
+              final result = await Navigator.pushNamed(context, '/barcodeScanner');
+              if (result != null && result is String) {
+                debugPrint("Taranan QR Kod: $result");
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Taranan Kod: $result')),
+                );
+              }
+            },
+            backgroundColor: AppColors.buttonYellow,
+            child: const Icon(Icons.qr_code, color: Colors.black),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/deleteProduct'),
+              style: ElevatedButton.styleFrom(
+                padding: AppPadding.vertical12,
+                shape: const StadiumBorder(),
+                backgroundColor: AppColors.deleteRed,
+              ),
+              child: const Text('Delete Item', style: AppTextStyles.smallButtonWhiteText),
+            ),
+          ),
+        ],
       ),
     );
   }
