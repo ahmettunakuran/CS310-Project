@@ -24,9 +24,14 @@ class ProductProvider extends ChangeNotifier {
         .snapshots()
         .map((snap) {
           print('Firestore snapshot for uid $uid: ${snap.docs.length} products');
-          return snap.docs
-            .map((d) => Product.fromDoc(d.data()..putIfAbsent('id', () => d.id)))
-            .toList();
+          return snap.docs.map((d) {
+            try {
+              return Product.fromDoc(d.data()..putIfAbsent('id', () => d.id));
+            } catch (e, st) {
+              print('Product.fromDoc error: $e\n$st\ndata: \\${d.data()}');
+              return null;
+            }
+          }).whereType<Product>().toList();
         });
   }
 
