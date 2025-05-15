@@ -6,6 +6,9 @@ import '../utils/theme_manager.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_padding.dart';
 import '../utils/text_styles.dart';
+import 'package:provider/provider.dart';
+import '../providers/product_provider.dart';
+import '../widgets/pie_chart_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -56,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final productProvider = Provider.of<ProductProvider?>(context);
     return Scaffold(
       backgroundColor: _themeManager.backgroundColor,
       drawer: const CustomDrawer(),
@@ -91,7 +95,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPlaceholderChart(),
+            productProvider == null
+                ? const SizedBox(height: 200)
+                : PieChartWidget(productsStream: productProvider.products),
             const SizedBox(height: 20),
             _buildSectionHeader(
               title: 'Out Of Stock',
@@ -112,20 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildPlaceholderChart() {
-    return Container(
-      height: 200,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.placeholderGrey,
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: const Center(
-        child: Text(
-          'Pie Chart Placeholder',
-          style: AppTextStyles.label,
-        ),
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _buildSectionHeader({required String title, required VoidCallback onViewAllPressed}) {
