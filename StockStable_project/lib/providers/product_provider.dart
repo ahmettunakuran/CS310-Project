@@ -8,22 +8,26 @@ class ProductProvider extends ChangeNotifier {
   Stream<List<Product>>? _productStream;
 
   ProductProvider({required this.uid}) {
+    print('ProductProvider started for uid: $uid');
     _listenToProducts();
   }
 
   Stream<List<Product>> get products => _productStream ?? const Stream.empty();
 
   void _listenToProducts() {
+    print('Listening to products for uid: $uid');
     _productStream = _db
         .collection('users')
         .doc(uid)
         .collection('products')
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-        .map((d) => Product.fromDoc(d.data()
-      ..putIfAbsent('id', () => d.id)))
-        .toList());
+        .map((snap) {
+          print('Firestore snapshot for uid $uid: ${snap.docs.length} products');
+          return snap.docs
+            .map((d) => Product.fromDoc(d.data()..putIfAbsent('id', () => d.id)))
+            .toList();
+        });
   }
 
 

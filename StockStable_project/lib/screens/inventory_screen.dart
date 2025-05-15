@@ -253,6 +253,7 @@ class InventoryScreenState extends State<InventoryScreen> {
           : StreamBuilder<List<Product>>(
         stream: provider.products,
         builder: (context, snapshot) {
+          print('Inventory snapshot: state=${snapshot.connectionState}, hasData=${snapshot.hasData}, error=${snapshot.error}, dataLength=${snapshot.data?.length}');
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
