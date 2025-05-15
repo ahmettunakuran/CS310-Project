@@ -243,26 +243,31 @@ class InventoryScreenState extends State<InventoryScreen> {
             .orderBy('createdAt', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
-          print('Inventory direct snapshot: state=[32m${snapshot.connectionState}[0m, hasData=${snapshot.hasData}, error=${snapshot.error}, docs=${snapshot.data?.docs.length}');
+          print('Inventory direct snapshot: state=\u001b[32m${snapshot.connectionState}\u001b[0m, hasData=${snapshot.hasData}, error=${snapshot.error}, docs=${snapshot.data?.docs.length}');
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Error: [31m${snapshot.error}[0m'));
+            return Center(child: Text('Error: \u001b[31m${snapshot.error}\u001b[0m'));
           }
           final docs = snapshot.data?.docs ?? [];
           if (docs.isEmpty) {
             return const Center(child: Text("No products yet."));
           }
+          // Her dokümanı Product modeline dönüştür
+          final products = docs.map((doc) {
+            try {
+              final data = doc.data() as Map<String, dynamic>;
+              data['id'] = doc.id;
+              return Product.fromDoc(data);
+            } catch (e, st) {
+              print('Product.fromDoc error: $e\n$st\ndata: ${doc.data()}');
+              return null;
+            }
+          }).whereType<Product>().toList();
           return ListView.builder(
-            itemCount: docs.length,
-            itemBuilder: (_, i) {
-              final data = docs[i].data() as Map<String, dynamic>;
-              return ListTile(
-                title: Text(data['name'] ?? 'No name'),
-                subtitle: Text('Amount: [34m${data['amount']}[0m'),
-              );
-            },
+            itemCount: products.length,
+            itemBuilder: (_, i) => _buildProductCard(products[i]),
           );
         },
       ),
