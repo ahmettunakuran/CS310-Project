@@ -211,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(width: 8),
           Expanded(
             child: ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, '/deleteProduct'),
+              onPressed: () => Navigator.pushNamed(context, '/inventory'),
               style: ElevatedButton.styleFrom(
                 padding: AppPadding.vertical12,
                 shape: const StadiumBorder(),

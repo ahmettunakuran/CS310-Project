@@ -34,7 +34,7 @@ void main() async {
         // Kimlik doğrulama durumunu yöneten ChangeNotifier
         ChangeNotifierProvider(create: (_) => AuthProvider()),
 
-        // Kullanıcı oturum açıksa ProductProvider’ı enjekte eder
+        // Kullanıcı oturum açıksa ProductProvider'ı enjekte eder
         ChangeNotifierProxyProvider<AuthProvider, ProductProvider?>(
           create: (_) => null,                                       // placeholder YOK
           update: (_, auth, __) =>
@@ -100,7 +100,6 @@ class _StockStableAppState extends State<StockStableApp> {
         '/addItem': (context) => const AddItemScreen(),
         '/inventory': (context) => const InventoryScreen(),
         '/deleteItem': (context) => DeleteProductScreen(),
-        '/deleteProduct': (context) => const InventoryScreen(),
         '/orderHistory': (context) => OrderHistoryScreen(),
         '/help': (context) => const HelpScreen(),
         '/settings': (context) => const SettingsScreen(),
