@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../providers/product_provider.dart';
 import '../models/product.dart';
@@ -31,7 +32,7 @@ class _OutOfStockScreenState extends State<OutOfStockScreen> {
   Widget build(BuildContext context) {
     // Provider null olabilir; UID gelene kadar bekleriz
     final ProductProvider? provider = context.watch<ProductProvider?>();
-
+    print('OutOfStockScreen provider uid: ${provider?.uid}');
     return Scaffold(
       backgroundColor: _themeManager.isDarkMode
           ? _themeManager.backgroundColor
@@ -42,34 +43,41 @@ class _OutOfStockScreenState extends State<OutOfStockScreen> {
       ),
 
       /* ─────────────  BODY  ───────────── */
-      body: provider == null
-          ? const Center(child: CircularProgressIndicator())
-          : StreamBuilder<List<Product>>(
-        // yalnızca miktarı 0 olanları filtreliyoruz
-        stream: provider.products
-            .map((list) => list.where((p) => p.amount == 0).toList()),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(provider?.uid ?? 'YANLIŞ_UID')
+            .collection('products')
+            .orderBy('createdAt', descending: true)
+            .snapshots(),
         builder: (context, snapshot) {
+          print('OutOfStock direct snapshot: state=${snapshot.connectionState}, hasData=${snapshot.hasData}, error=${snapshot.error}, docs=${snapshot.data?.docs.length}');
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(
-                child: Text('Error: ${snapshot.error}',
-                    style: AppTextStyles.hint));
+            return Center(child: Text('Error: ${snapshot.error}', style: AppTextStyles.hint));
           }
-
-          final outOfStock = snapshot.data ?? [];
-
-          if (outOfStock.isEmpty) {
+          final docs = snapshot.data?.docs ?? [];
+          // Her dokümanı Product modeline dönüştür
+          final products = docs.map((doc) {
+            try {
+              final data = doc.data() as Map<String, dynamic>;
+              data['id'] = doc.id;
+              return Product.fromDoc(data);
+            } catch (e, st) {
+              print('Product.fromDoc error: $e\n$st\ndata: ${doc.data()}');
+              return null;
+            }
+          }).whereType<Product>().where((p) => p.amount == 0).toList();
+          if (products.isEmpty) {
             return const Center(child: Text("No out of stock products."));
           }
-
           return ListView.builder(
             padding: AppPadding.all8,
-            itemCount: outOfStock.length,
+            itemCount: products.length,
             itemBuilder: (_, i) {
-              final p = outOfStock[i];
-
+              final p = products[i];
               return Card(
                 margin: AppPadding.cardMargin,
                 color: _themeManager.isDarkMode
