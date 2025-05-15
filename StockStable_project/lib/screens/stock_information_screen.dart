@@ -43,7 +43,20 @@ class _StockInformationScreenState extends State<StockInformationScreen> {
 
       /* ─────────────  BODY  ───────────── */
       body: provider == null
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  const Text("Oturum açmanız gerekiyor.", style: AppTextStyles.hint),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+                    child: const Text("Giriş Yap"),
+                  ),
+                ],
+              ),
+            )
           : StreamBuilder<List<Product>>(
         // Sadece stokta ürünleri (amount > 0) filtrele
         stream: provider.products
