@@ -11,7 +11,7 @@ class ProductProvider extends ChangeNotifier {
     _listenToProducts();
   }
 
-  Stream<List<Product>> get products => _productStream!;
+  Stream<List<Product>> get products => _productStream ?? const Stream.empty();
 
   void _listenToProducts() {
     _productStream = _db
