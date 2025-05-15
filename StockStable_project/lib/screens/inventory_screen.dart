@@ -228,50 +228,41 @@ class InventoryScreenState extends State<InventoryScreen> {
   Widget build(BuildContext context) {
 
     final ProductProvider? provider = context.watch<ProductProvider?>();
+    print('InventoryScreen provider uid: [32m${provider?.uid}[0m');
     return Scaffold(
       appBar: AppBar(
         title: const Text("INVENTORY", style: AppTextStyles.appBarText),
         backgroundColor: AppColors.primaryBlue,
       ),
 
-
-      body: provider == null
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 16),
-                  const Text("Oturum açmanız gerekiyor.", style: AppTextStyles.hint),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
-                    child: const Text("Giriş Yap"),
-                  ),
-                ],
-              ),
-            )
-          : StreamBuilder<List<Product>>(
-        stream: provider.products,
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(provider?.uid ?? 'YANLIŞ_UID')
+            .collection('products')
+            .orderBy('createdAt', descending: true)
+            .snapshots(),
         builder: (context, snapshot) {
-          print('Inventory snapshot: state=${snapshot.connectionState}, hasData=${snapshot.hasData}, error=${snapshot.error}, dataLength=${snapshot.data?.length}');
+          print('Inventory direct snapshot: state=[32m${snapshot.connectionState}[0m, hasData=${snapshot.hasData}, error=${snapshot.error}, docs=${snapshot.data?.docs.length}');
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text('Error: [31m${snapshot.error}[0m'));
           }
-
-          final products = snapshot.data ?? [];
-
-          if (products.isEmpty) {
-            return const Center(
-              child: Text("No products yet.", style: AppTextStyles.hint),
-            );
+          final docs = snapshot.data?.docs ?? [];
+          if (docs.isEmpty) {
+            return const Center(child: Text("No products yet."));
           }
-
           return ListView.builder(
-            itemCount: products.length,
-            itemBuilder: (_, i) => _buildProductCard(products[i]),
+            itemCount: docs.length,
+            itemBuilder: (_, i) {
+              final data = docs[i].data() as Map<String, dynamic>;
+              return ListTile(
+                title: Text(data['name'] ?? 'No name'),
+                subtitle: Text('Amount: [34m${data['amount']}[0m'),
+              );
+            },
           );
         },
       ),
