@@ -181,8 +181,6 @@ class InventoryScreenState extends State<InventoryScreen> {
                 Navigator.pop(context);
                 final pickedFile = await picker.pickImage(source: ImageSource.gallery);
                 if (pickedFile != null) {
-                  print('Seçilen dosya yolu: \'${pickedFile.path}\'');
-                  print('Dosya var mı: \'${File(pickedFile.path).existsSync()}\'');
                   await _uploadAndSavePhoto(product, File(pickedFile.path));
                 }
               },
@@ -194,8 +192,6 @@ class InventoryScreenState extends State<InventoryScreen> {
                 Navigator.pop(context);
                 final pickedFile = await picker.pickImage(source: ImageSource.camera);
                 if (pickedFile != null) {
-                  print('Seçilen dosya yolu: \'${pickedFile.path}\'');
-                  print('Dosya var mı: \'${File(pickedFile.path).existsSync()}\'');
                   await _uploadAndSavePhoto(product, File(pickedFile.path));
                 }
               },
@@ -208,23 +204,19 @@ class InventoryScreenState extends State<InventoryScreen> {
 
   Future<void> _uploadAndSavePhoto(Product product, File imageFile) async {
     try {
-      print('Yükleme başlıyor...');
       final fileName = DateTime.now().millisecondsSinceEpoch.toString();
       final ref = FirebaseStorage.instance.ref().child('product_photos').child(fileName);
       final uploadTask = ref.putFile(imageFile);
       final snapshot = await uploadTask.whenComplete(() {});
       final photoUrl = await snapshot.ref.getDownloadURL();
-      print('Yükleme başarılı, url: $photoUrl');
       await FirebaseFirestore.instance
           .collection('users')
           .doc(product.createdBy)
           .collection('products')
           .doc(product.id)
           .update({'photoUrl': photoUrl});
-      print('Firestore güncellendi!');
       setState(() {});
     } catch (e) {
-      print('HATA: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Fotoğraf yüklenemedi: $e')),
       );
@@ -324,7 +316,6 @@ class InventoryScreenState extends State<InventoryScreen> {
   Widget build(BuildContext context) {
 
     final ProductProvider? provider = context.watch<ProductProvider?>();
-    print('InventoryScreen provider uid: [32m${provider?.uid}[0m');
     return Scaffold(
       appBar: AppBar(
         title: const Text("INVENTORY", style: AppTextStyles.appBarText),
@@ -339,12 +330,11 @@ class InventoryScreenState extends State<InventoryScreen> {
             .orderBy('createdAt', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
-          print('Inventory direct snapshot: state=\u001b[32m${snapshot.connectionState}\u001b[0m, hasData=${snapshot.hasData}, error=${snapshot.error}, docs=${snapshot.data?.docs.length}');
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Error: \u001b[31m${snapshot.error}\u001b[0m'));
+            return Center(child: Text('Error: ${snapshot.error}'));
           }
           final docs = snapshot.data?.docs ?? [];
           if (docs.isEmpty) {
