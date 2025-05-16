@@ -181,6 +181,8 @@ class InventoryScreenState extends State<InventoryScreen> {
                 Navigator.pop(context);
                 final pickedFile = await picker.pickImage(source: ImageSource.gallery);
                 if (pickedFile != null) {
+                  print('Seçilen dosya yolu: \'${pickedFile.path}\'');
+                  print('Dosya var mı: \'${File(pickedFile.path).existsSync()}\'');
                   await _uploadAndSavePhoto(product, File(pickedFile.path));
                 }
               },
@@ -192,6 +194,8 @@ class InventoryScreenState extends State<InventoryScreen> {
                 Navigator.pop(context);
                 final pickedFile = await picker.pickImage(source: ImageSource.camera);
                 if (pickedFile != null) {
+                  print('Seçilen dosya yolu: \'${pickedFile.path}\'');
+                  print('Dosya var mı: \'${File(pickedFile.path).existsSync()}\'');
                   await _uploadAndSavePhoto(product, File(pickedFile.path));
                 }
               },
