@@ -203,18 +203,28 @@ class InventoryScreenState extends State<InventoryScreen> {
   }
 
   Future<void> _uploadAndSavePhoto(Product product, File imageFile) async {
-    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    final ref = FirebaseStorage.instance.ref().child('product_photos').child(fileName);
-    final uploadTask = ref.putFile(imageFile);
-    final snapshot = await uploadTask.whenComplete(() {});
-    final photoUrl = await snapshot.ref.getDownloadURL();
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(product.createdBy)
-        .collection('products')
-        .doc(product.id)
-        .update({'photoUrl': photoUrl});
-    setState(() {});
+    try {
+      print('Yükleme başlıyor...');
+      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      final ref = FirebaseStorage.instance.ref().child('product_photos').child(fileName);
+      final uploadTask = ref.putFile(imageFile);
+      final snapshot = await uploadTask.whenComplete(() {});
+      final photoUrl = await snapshot.ref.getDownloadURL();
+      print('Yükleme başarılı, url: $photoUrl');
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(product.createdBy)
+          .collection('products')
+          .doc(product.id)
+          .update({'photoUrl': photoUrl});
+      print('Firestore güncellendi!');
+      setState(() {});
+    } catch (e) {
+      print('HATA: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fotoğraf yüklenemedi: $e')),
+      );
+    }
   }
 
   Widget _buildProductCard(Product product) {
