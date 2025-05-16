@@ -21,132 +21,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final _stockController = TextEditingController();
   final _priceController = TextEditingController();
   final _categoryController = TextEditingController();
-
-  File? _pickedImage;
-  String? _uploadedImageUrl;
-  bool _isUploading = false;
-
-  Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
-    if (pickedFile != null) {
-      setState(() {
-        _pickedImage = File(pickedFile.path);
-      });
-    }
-  }
-
-  Future<String?> _uploadImage(File imageFile) async {
-    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    final ref = FirebaseStorage.instance.ref().child('product_photos').child(fileName);
-    final uploadTask = ref.putFile(imageFile);
-    final snapshot = await uploadTask.whenComplete(() {});
-    return await snapshot.ref.getDownloadURL();
-  }
-
-  Future<void> _submitForm() async {
-    final isValid = _formKey.currentState!.validate();
-
-    if (!isValid) {
-      _showValidationDialog();
-      return;
-    }
-
-    setState(() {
-      _isUploading = true;
-    });
-
-    try {
-      final name = _nameController.text;
-      final stock = int.tryParse(_stockController.text) ?? 0;
-      final price = double.tryParse(_priceController.text) ?? 0.0;
-      final category = _categoryController.text;
-      String? photoUrl;
-      if (_pickedImage != null) {
-        photoUrl = await _uploadImage(_pickedImage!);
-      }
-      await addProductToFirestore(
-        name: name,
-        amount: stock,
-        price: price,
-        category: category,
-        photoUrl: photoUrl,
-      );
-      if (mounted) {
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("Error", style: AppTextStyles.label),
-            content: Text(
-              e.toString(),
-              style: AppTextStyles.hint,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("OK", style: AppTextStyles.link),
-              ),
-            ],
-          ),
-        );
-      }
-    } finally {
-      setState(() {
-        _isUploading = false;
-      });
-    }
-  }
-
-  void _showValidationDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Invalid Input", style: AppTextStyles.label),
-        content: const Text(
-          "Please check your inputs. Make sure stock is a whole number and price is a valid number.",
-          style: AppTextStyles.hint,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("OK", style: AppTextStyles.link),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showImageSourceActionSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Pick from Gallery'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.gallery);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Take a Photo'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.camera);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  final _photoUrlController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -165,26 +40,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
           key: _formKey,
           child: Column(
             children: [
-              Container(
-                height: 150,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppColors.placeholderGrey,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: GestureDetector(
-                  onTap: _showImageSourceActionSheet,
-                  child: _pickedImage != null
-                      ? Image.file(_pickedImage!, fit: BoxFit.cover)
-                      : const Center(
-                          child: Icon(Icons.add, size: 60, color: AppColors.greyCol),
-                        ),
-                ),
-              ),
-              if (_isUploading) ...[
-                const SizedBox(height: 10),
-                const CircularProgressIndicator(),
-              ],
               const SizedBox(height: 20),
 
               // Stock
@@ -261,6 +116,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   return null;
                 },
               ),
+              const SizedBox(height: 16),
+
+              // Photo URL
+              TextFormField(
+                controller: _photoUrlController,
+                decoration: InputDecoration(
+                  labelText: 'Photo URL (optional)',
+                  labelStyle: AppTextStyles.label.copyWith(color: textColor),
+                  hintText: 'https://.../image.jpg',
+                  hintStyle: AppTextStyles.hint.copyWith(color: hintColor),
+                ),
+                style: AppTextStyles.hint.copyWith(color: textColor),
+              ),
+              const SizedBox(height: 16),
+
               const SizedBox(height: 30),
 
               ElevatedButton.icon(
@@ -278,6 +148,69 @@ class _AddItemScreenState extends State<AddItemScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future<void> _submitForm() async {
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid) {
+      _showValidationDialog();
+      return;
+    }
+    try {
+      final name = _nameController.text;
+      final stock = int.tryParse(_stockController.text) ?? 0;
+      final price = double.tryParse(_priceController.text) ?? 0.0;
+      final category = _categoryController.text;
+      final photoUrl = _photoUrlController.text.isNotEmpty ? _photoUrlController.text : null;
+      await addProductToFirestore(
+        name: name,
+        amount: stock,
+        price: price,
+        category: category,
+        photoUrl: photoUrl,
+      );
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Error", style: AppTextStyles.label),
+            content: Text(
+              e.toString(),
+              style: AppTextStyles.hint,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK", style: AppTextStyles.link),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
+  void _showValidationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Invalid Input", style: AppTextStyles.label),
+        content: const Text(
+          "Please check your inputs. Make sure stock is a whole number and price is a valid number.",
+          style: AppTextStyles.hint,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK", style: AppTextStyles.link),
+          ),
+        ],
       ),
     );
   }
