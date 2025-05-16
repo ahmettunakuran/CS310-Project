@@ -4,6 +4,9 @@ import 'package:navigate_screens/utils/app_colors.dart';
 import 'package:navigate_screens/utils/text_styles.dart';
 import '../utils/app_padding.dart';
 import '../services/product_service.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 
 class AddItemScreen extends StatefulWidget {
   const AddItemScreen({super.key});
@@ -19,6 +22,28 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final _priceController = TextEditingController();
   final _categoryController = TextEditingController();
 
+  File? _pickedImage;
+  String? _uploadedImageUrl;
+  bool _isUploading = false;
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _pickedImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<String?> _uploadImage(File imageFile) async {
+    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    final ref = FirebaseStorage.instance.ref().child('product_photos').child(fileName);
+    final uploadTask = ref.putFile(imageFile);
+    final snapshot = await uploadTask.whenComplete(() {});
+    return await snapshot.ref.getDownloadURL();
+  }
+
   Future<void> _submitForm() async {
     final isValid = _formKey.currentState!.validate();
 
@@ -27,19 +52,26 @@ class _AddItemScreenState extends State<AddItemScreen> {
       return;
     }
 
+    setState(() {
+      _isUploading = true;
+    });
+
     try {
       final name = _nameController.text;
       final stock = int.tryParse(_stockController.text) ?? 0;
       final price = double.tryParse(_priceController.text) ?? 0.0;
       final category = _categoryController.text;
-
+      String? photoUrl;
+      if (_pickedImage != null) {
+        photoUrl = await _uploadImage(_pickedImage!);
+      }
       await addProductToFirestore(
         name: name,
         amount: stock,
         price: price,
         category: category,
+        photoUrl: photoUrl,
       );
-
       if (mounted) {
         Navigator.pop(context);
       }
@@ -62,6 +94,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
           ),
         );
       }
+    } finally {
+      setState(() {
+        _isUploading = false;
+      });
     }
   }
 
@@ -108,11 +144,20 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   color: AppColors.placeholderGrey,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(
-                  child: Icon(Icons.add_photo_alternate,
-                      size: 50, color: AppColors.greyCol),
+                child: GestureDetector(
+                  onTap: _pickImage,
+                  child: _pickedImage != null
+                      ? Image.file(_pickedImage!, fit: BoxFit.cover)
+                      : const Center(
+                          child: Icon(Icons.add_photo_alternate,
+                              size: 50, color: AppColors.greyCol),
+                        ),
                 ),
               ),
+              if (_isUploading) ...[
+                const SizedBox(height: 10),
+                const CircularProgressIndicator(),
+              ],
               const SizedBox(height: 20),
 
               // Stock

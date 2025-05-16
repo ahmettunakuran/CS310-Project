@@ -7,6 +7,7 @@ Future<void> addProductToFirestore({
   required int amount,
   required double price,
   required String category,
+  String? photoUrl,
 }) async {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) {
@@ -28,6 +29,7 @@ Future<void> addProductToFirestore({
     'category': category,
     'createdBy': user.uid,
     'createdAt': FieldValue.serverTimestamp(),
+    if (photoUrl != null) 'photoUrl': photoUrl,
   });
 }
 

@@ -169,12 +169,22 @@ class InventoryScreenState extends State<InventoryScreen> {
       margin: AppPadding.listPadding,
       child: ListTile(
         contentPadding: AppPadding.all16,
-        leading: Container(
-          width: 60,
-          height: 60,
-          color: AppColors.placeholderGrey,
-          child: const Icon(Icons.image, color: AppColors.greyCol),
-        ),
+        leading: product.photoUrl != null && product.photoUrl!.isNotEmpty
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  product.photoUrl!,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : Container(
+                width: 60,
+                height: 60,
+                color: AppColors.placeholderGrey,
+                child: const Icon(Icons.image, color: AppColors.greyCol),
+              ),
         title: Text(
           'Product Name: ${product.name}',
           style: AppTextStyles.label,

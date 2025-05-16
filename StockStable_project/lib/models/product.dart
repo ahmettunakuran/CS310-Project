@@ -8,6 +8,7 @@ class Product {
   final String category;
   final String createdBy;
   final DateTime? createdAt;
+  final String? photoUrl;
 
   Product({
     required this.id,
@@ -17,6 +18,7 @@ class Product {
     required this.category,
     required this.createdBy,
     required this.createdAt,
+    this.photoUrl,
   });
 
   /// Firestore belgesinden üret
@@ -29,10 +31,11 @@ class Product {
       category: data['category'] as String,
       createdBy: data['createdBy'] as String,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
+      photoUrl: data['photoUrl'] as String?,
     );
   }
 
-  /// Firestore’a yazarken haritaya dönüştür
+  /// Firestore'a yazarken haritaya dönüştür
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -42,6 +45,7 @@ class Product {
       'category': category,
       'createdBy': createdBy,
       'createdAt': createdAt,
+      'photoUrl': photoUrl,
     };
   }
 }
