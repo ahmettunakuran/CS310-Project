@@ -8,6 +8,9 @@ import '../utils/app_padding.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
 import '../models/product.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 
 
 class InventoryScreen extends StatefulWidget {
@@ -164,6 +167,56 @@ class InventoryScreenState extends State<InventoryScreen> {
     }
   }
 
+  Future<void> _pickAndUploadPhoto(Product product) async {
+    final picker = ImagePicker();
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Pick from Gallery'),
+              onTap: () async {
+                Navigator.pop(context);
+                final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                if (pickedFile != null) {
+                  await _uploadAndSavePhoto(product, File(pickedFile.path));
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Take a Photo'),
+              onTap: () async {
+                Navigator.pop(context);
+                final pickedFile = await picker.pickImage(source: ImageSource.camera);
+                if (pickedFile != null) {
+                  await _uploadAndSavePhoto(product, File(pickedFile.path));
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _uploadAndSavePhoto(Product product, File imageFile) async {
+    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    final ref = FirebaseStorage.instance.ref().child('product_photos').child(fileName);
+    final uploadTask = ref.putFile(imageFile);
+    final snapshot = await uploadTask.whenComplete(() {});
+    final photoUrl = await snapshot.ref.getDownloadURL();
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(product.createdBy)
+        .collection('products')
+        .doc(product.id)
+        .update({'photoUrl': photoUrl});
+    setState(() {});
+  }
+
   Widget _buildProductCard(Product product) {
     return Card(
       margin: AppPadding.listPadding,
@@ -179,11 +232,30 @@ class InventoryScreenState extends State<InventoryScreen> {
                   fit: BoxFit.cover,
                 ),
               )
-            : Container(
-                width: 60,
-                height: 60,
-                color: AppColors.placeholderGrey,
-                child: const Icon(Icons.image, color: AppColors.greyCol),
+            : Stack(
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    color: AppColors.placeholderGrey,
+                    child: const Icon(Icons.image, color: AppColors.greyCol),
+                  ),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: GestureDetector(
+                      onTap: () => _pickAndUploadPhoto(product),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryBlue,
+                          shape: BoxShape.circle,
+                        ),
+                        padding: const EdgeInsets.all(4),
+                        child: const Icon(Icons.add, color: Colors.white, size: 20),
+                      ),
+                    ),
+                  ),
+                ],
               ),
         title: Text(
           'Product Name: ${product.name}',
