@@ -26,9 +26,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
   String? _uploadedImageUrl;
   bool _isUploading = false;
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
         _pickedImage = File(pickedFile.path);
@@ -120,6 +120,34 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
   }
 
+  void _showImageSourceActionSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Pick from Gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Take a Photo'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
@@ -145,12 +173,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: GestureDetector(
-                  onTap: _pickImage,
+                  onTap: _showImageSourceActionSheet,
                   child: _pickedImage != null
                       ? Image.file(_pickedImage!, fit: BoxFit.cover)
                       : const Center(
-                          child: Icon(Icons.add_photo_alternate,
-                              size: 50, color: AppColors.greyCol),
+                          child: Icon(Icons.add, size: 60, color: AppColors.greyCol),
                         ),
                 ),
               ),
