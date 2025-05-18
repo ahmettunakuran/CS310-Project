@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:navigate_screens/utils/app_colors.dart';
 import '../utils/theme_manager.dart';
 import '../utils/app_padding.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AppSettings {
   static bool darkMode = false;
@@ -28,6 +30,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     'German'
   ];
   final ThemeManager _themeManager = ThemeManager();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String _userEmail = '';
+  String _userName = '';
+  String _userPhone = '';
 
   @override
   void initState() {
@@ -36,10 +42,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _notifications = AppSettings.notifications;
     _selectedLanguage = AppSettings.language;
     _darkMode = _themeManager.isDarkMode;
+    _loadUserData();
 
     _themeManager.addListener(() {
       if (mounted) setState(() {});
     });
+  }
+
+  Future<void> _loadUserData() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      setState(() {
+        _userEmail = user.email ?? 'No email';
+      });
+
+      // Get user data from Firestore
+      try {
+        final userData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userData.exists) {
+          setState(() {
+            _userName = userData.data()?['username'] ?? 'No username';
+            _userPhone = userData.data()?['phone'] ?? 'No phone number';
+          });
+        }
+      } catch (e) {
+        print('Error loading user data: $e');
+      }
+    }
   }
 
   void _saveSettings() {
@@ -149,13 +182,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: 'USER INFO',
               children: [
                 _buildInfoItem(
-                    text: 'Username: user123',
+                    text: 'Username: $_userName',
                     color: _themeManager.infoOddColor),
                 _buildInfoItem(
-                    text: 'Email: user@example.com',
+                    text: 'Email: $_userEmail',
                     color: _themeManager.infoEvenColor),
                 _buildInfoItem(
-                    text: 'Phone: XXX-XXX-XX-XX',
+                    text: 'Phone: $_userPhone',
                     color: _themeManager.infoOddColor),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 import 'utils/theme_manager.dart';
@@ -13,12 +14,10 @@ import 'screens/login_screen.dart';
 import 'screens/sign_up_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/splash_screen.dart';
-import 'screens/delete_product_screen.dart';
 import 'screens/order_history_screen.dart';
 import 'screens/help_screen.dart';
 import 'screens/settings_screen.dart';
-import '../providers/order_provider.dart';
-import 'package:provider/provider.dart';
+import 'providers/order_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/product_provider.dart';
 
@@ -31,12 +30,12 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        // Kimlik doğrulama durumunu yöneten ChangeNotifier
+        // Provider for authentication state management
         ChangeNotifierProvider(create: (_) => AuthProvider()),
 
-        // Kullanıcı oturum açıksa ProductProvider'ı enjekte eder
+        // Injects ProductProvider when user is authenticated
         ChangeNotifierProxyProvider<AuthProvider, ProductProvider?>(
-          create: (_) => null,                                       // placeholder YOK
+          create: (_) => null,
           update: (_, auth, __) =>
           auth.user == null ? null : ProductProvider(uid: auth.user!.uid),
         ),
@@ -45,7 +44,6 @@ void main() async {
           update: (_, auth, __) =>
           auth.user == null ? null : OrderProvider(uid: auth.user!.uid),
         ),
-
       ],
       child: const StockStableApp(),
     ),
@@ -99,8 +97,7 @@ class _StockStableAppState extends State<StockStableApp> {
         '/barcodeScanner': (context) => const BarcodeScannerScreen(),
         '/addItem': (context) => const AddItemScreen(),
         '/inventory': (context) => const InventoryScreen(),
-        '/deleteItem': (context) => DeleteProductScreen(),
-        '/orderHistory': (context) => OrderHistoryScreen(),
+        '/orderHistory': (context) => const OrderHistoryScreen(),
         '/help': (context) => const HelpScreen(),
         '/settings': (context) => const SettingsScreen(),
       },

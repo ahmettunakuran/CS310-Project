@@ -1,9 +1,11 @@
 // lib/screens/add_item_screen.dart
 import 'package:flutter/material.dart';
-import 'package:navigate_screens/utils/app_colors.dart';
-import 'package:navigate_screens/utils/text_styles.dart';
+import 'package:provider/provider.dart';
+import '../utils/app_colors.dart';
+import '../utils/text_styles.dart';
 import '../utils/app_padding.dart';
 import '../services/product_service.dart';
+import '../providers/order_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
@@ -98,7 +100,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               TextFormField(
                 controller: _priceController,
                 keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
                   labelText: 'Enter the price (₺)',
                   labelStyle: AppTextStyles.label.copyWith(color: textColor),
@@ -164,6 +166,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
       final price = double.tryParse(_priceController.text) ?? 0.0;
       final category = _categoryController.text;
       final photoUrl = _photoUrlController.text.isNotEmpty ? _photoUrlController.text : null;
+
+      // Add the product to Firestore
       await addProductToFirestore(
         name: name,
         amount: stock,
@@ -171,6 +175,19 @@ class _AddItemScreenState extends State<AddItemScreen> {
         category: category,
         photoUrl: photoUrl,
       );
+
+      // Create order history entry
+      final orderProvider = Provider.of<OrderProvider?>(context, listen: false);
+      if (orderProvider != null) {
+        await orderProvider.addOrder(Order(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          date: DateTime.now(),
+          productName: name,
+          amount: stock,
+          operationType: 'add',
+        ));
+      }
+
       if (mounted) {
         Navigator.pop(context);
       }

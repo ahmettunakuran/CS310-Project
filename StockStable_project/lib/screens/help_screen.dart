@@ -18,32 +18,32 @@ class _HelpScreenState extends State<HelpScreen> {
     {
       'question': 'How to add a new product?',
       'answer':
-          'Go to Home screen and tap on "Add Item" button. Fill in the required details and tap Save.',
+      'Go to Home screen and tap on "Add Item" button. Fill in the required details and tap Save.',
     },
     {
       'question': 'How to delete a product?',
       'answer':
-          'Go to Home screen and tap on "Delete Item", then select the product you want to delete.',
+      'Go to Home screen and tap on "Delete Item", then select the product you want to delete.',
     },
     {
       'question': 'How to scan a product barcode?',
       'answer':
-          'Tap on the barcode scanner button in the middle of the bottom navigation bar and point your camera at the barcode.',
+      'Tap on the barcode scanner button in the middle of the bottom navigation bar and point your camera at the barcode.',
     },
     {
       'question': 'How to view out of stock items?',
       'answer':
-          'Go to Home screen and tap on "View all" next to the "Out Of Stock" section.',
+      'Go to Home screen and tap on "View all" next to the "Out Of Stock" section.',
     },
     {
       'question': 'How to check inventory?',
       'answer':
-          'Open the drawer menu from the Home screen and tap on "Inventory".',
+      'Open the drawer menu from the Home screen and tap on "Inventory".',
     },
     {
       'question': 'How to change app settings?',
       'answer':
-          'Open the drawer menu from the Home screen and tap on "Settings".',
+      'Open the drawer menu from the Home screen and tap on "Settings".',
     },
   ];
 
@@ -73,8 +73,8 @@ class _HelpScreenState extends State<HelpScreen> {
       } else {
         _filteredFaqItems = _faqItems
             .where((item) =>
-                item['question']!.toLowerCase().contains(query) ||
-                item['answer']!.toLowerCase().contains(query))
+        item['question']!.toLowerCase().contains(query) ||
+            item['answer']!.toLowerCase().contains(query))
             .toList();
       }
     });
@@ -127,56 +127,56 @@ class _HelpScreenState extends State<HelpScreen> {
           Expanded(
             child: _filteredFaqItems.isEmpty
                 ? Center(
-                    child: Text(
-                      'No results found',
-                      style: TextStyle(color: _themeManager.primaryTextColor),
-                    ),
-                  )
+              child: Text(
+                'No results found',
+                style: TextStyle(color: _themeManager.primaryTextColor),
+              ),
+            )
                 : ListView.builder(
-                    itemCount: _filteredFaqItems.length,
-                    itemBuilder: (context, index) {
-                      final item = _filteredFaqItems[index];
-                      final isEven = index % 2 == 0;
+              itemCount: _filteredFaqItems.length,
+              itemBuilder: (context, index) {
+                final item = _filteredFaqItems[index];
+                final isEven = index % 2 == 0;
 
-                      return Container(
-                        color: isEven
-                            ? _themeManager.faqOddColor
-                            : _themeManager.faqEvenColor,
-                        child: Theme(
-                          data: Theme.of(context).copyWith(
-                            dividerColor: Colors.transparent,
-                            unselectedWidgetColor:
-                                _themeManager.primaryTextColor,
-                            colorScheme: ColorScheme.light(
-                              primary: _themeManager.primaryTextColor,
+                return Container(
+                  color: isEven
+                      ? _themeManager.faqOddColor
+                      : _themeManager.faqEvenColor,
+                  child: Theme(
+                    data: Theme.of(context).copyWith(
+                      dividerColor: Colors.transparent,
+                      unselectedWidgetColor:
+                      _themeManager.primaryTextColor,
+                      colorScheme: ColorScheme.light(
+                        primary: _themeManager.primaryTextColor,
+                      ),
+                    ),
+                    child: ExpansionTile(
+                      title: Text(
+                        item['question']!,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: _themeManager.primaryTextColor,
+                        ),
+                      ),
+                      iconColor: _themeManager.primaryTextColor,
+                      collapsedIconColor: _themeManager.primaryTextColor,
+                      children: [
+                        Padding(
+                          padding: AppPadding.all16,
+                          child: Text(
+                            item['answer']!,
+                            style: TextStyle(
+                              color: _themeManager.primaryTextColor,
                             ),
-                          ),
-                          child: ExpansionTile(
-                            title: Text(
-                              item['question']!,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: _themeManager.primaryTextColor,
-                              ),
-                            ),
-                            iconColor: _themeManager.primaryTextColor,
-                            collapsedIconColor: _themeManager.primaryTextColor,
-                            children: [
-                              Padding(
-                                padding: AppPadding.all16,
-                                child: Text(
-                                  item['answer']!,
-                                  style: TextStyle(
-                                    color: _themeManager.primaryTextColor,
-                                  ),
-                                ),
-                              ),
-                            ],
                           ),
                         ),
-                      );
-                    },
+                      ],
+                    ),
                   ),
+                );
+              },
+            ),
           ),
 
           // Contact Section
@@ -214,7 +214,7 @@ class _HelpScreenState extends State<HelpScreen> {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    'NUMBER: XXX-XXX-XX-XX',
+                    'NUMBER: 0312 000 00 00',
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       color: _themeManager.primaryTextColor,

@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:navigate_screens/utils/app_colors.dart';
-import 'package:navigate_screens/utils/text_styles.dart';
+import '../utils/app_colors.dart';
+import '../utils/text_styles.dart';
 import '../utils/app_padding.dart';
 import '../utils/theme_manager.dart';
+import '../services/product_service.dart';
 
 class DeleteProductScreen extends StatefulWidget {
-  const DeleteProductScreen({super.key});
+  final String productId;
+  final String productName;
+  final int currentStock;
+  final String? photoUrl;
+
+  const DeleteProductScreen({
+    super.key,
+    required this.productId,
+    required this.productName,
+    required this.currentStock,
+    this.photoUrl,
+  });
 
   @override
   State<DeleteProductScreen> createState() => _DeleteProductScreenState();
@@ -21,6 +33,34 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
     _themeManager.addListener(() {
       if (mounted) setState(() {});
     });
+  }
+
+  Future<void> _handleDelete() async {
+    try {
+      await deleteProduct(
+        productId: widget.productId,
+        productName: widget.productName,
+      );
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            content: Text(e.toString()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -40,31 +80,39 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
         padding: AppPadding.all16,
         child: Column(
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
-              'Product Name',
+              widget.productName,
               style: TextStyle(
                 fontSize: 24,
                 color: _themeManager.primaryTextColor,
               ),
             ),
-            SizedBox(height: 10),
-            SizedBox(
-              width: 200,
-              height: 200,
-              child: Placeholder(
-                color: _themeManager.isDarkMode
-                    ? Colors.grey[600]!
-                    : Colors.grey[400]!,
+            const SizedBox(height: 10),
+            if (widget.photoUrl != null)
+              Image.network(
+                widget.photoUrl!,
+                width: 200,
+                height: 200,
+                fit: BoxFit.cover,
+              )
+            else
+              SizedBox(
+                width: 200,
+                height: 200,
+                child: Placeholder(
+                  color: _themeManager.isDarkMode
+                      ? Colors.grey[600]!
+                      : Colors.grey[400]!,
+                ),
               ),
-            ),
             Text(
-              'ID: 00123',
+              'ID: ${widget.productId}',
               style: TextStyle(color: _themeManager.primaryTextColor),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
-              'Current Stock: 100',
+              'Current Stock: ${widget.currentStock}',
               style: TextStyle(
                 fontSize: 20,
                 color: _themeManager.primaryTextColor,
@@ -108,9 +156,9 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.deleteRed,
               ),
-              onPressed: () {},
-              label: Text('Delete', style: AppTextStyles.smallButtonWhiteText),
-              icon: Icon(Icons.delete),
+              onPressed: _handleDelete,
+              label: const Text('Delete', style: AppTextStyles.smallButtonWhiteText),
+              icon: const Icon(Icons.delete),
             )
           ],
         ),

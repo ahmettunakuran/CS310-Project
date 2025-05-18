@@ -11,6 +11,7 @@ import '../models/product.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
+import '../utils/theme_manager.dart';
 
 
 class InventoryScreen extends StatefulWidget {
@@ -21,6 +22,15 @@ class InventoryScreen extends StatefulWidget {
 }
 
 class InventoryScreenState extends State<InventoryScreen> {
+  final ThemeManager _themeManager = ThemeManager();
+
+  @override
+  void initState() {
+    super.initState();
+    _themeManager.addListener(() {
+      if (mounted) setState(() {});
+    });
+  }
 
   /*Stream<QuerySnapshot> _getUserProducts() {
     final user = FirebaseAuth.instance.currentUser;
@@ -125,28 +135,28 @@ class InventoryScreenState extends State<InventoryScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              final user = FirebaseAuth.instance.currentUser;
-              if (user == null) {
-                throw Exception('User must be logged in to update products');
-              }
+              try {
+                final updatedName = nameController.text.trim();
+                final updatedAmount = int.tryParse(amountController.text.trim());
+                final updatedPrice = double.tryParse(priceController.text.trim());
 
-              final updatedName = nameController.text.trim();
-              final updatedAmount = int.tryParse(amountController.text.trim());
-              final updatedPrice = double.tryParse(priceController.text.trim());
+                if (updatedName.isNotEmpty && updatedAmount != null && updatedPrice != null) {
+                  await context.read<ProductProvider>().updateProduct(
+                    docId,
+                    name: updatedName,
+                    amount: updatedAmount,
+                    price: updatedPrice,
+                  );
 
-              if (updatedName.isNotEmpty && updatedAmount != null && updatedPrice != null) {
-                await FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(user.uid)
-                    .collection('products')
-                    .doc(docId)
-                    .update({
-                  'name': updatedName,
-                  'amount': updatedAmount,
-                  'price': updatedPrice,
-                });
-
-                Navigator.pop(context);
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Product updated successfully')),
+                  );
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to update: $e')),
+                );
               }
             },
             child: const Text('Update'),
@@ -230,42 +240,47 @@ class InventoryScreenState extends State<InventoryScreen> {
         contentPadding: AppPadding.all16,
         leading: product.photoUrl != null && product.photoUrl!.isNotEmpty
             ? ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  product.photoUrl!,
-                  width: 60,
-                  height: 60,
-                  fit: BoxFit.cover,
-                ),
-              )
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(
+            product.photoUrl!,
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+          ),
+        )
             : Stack(
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    color: AppColors.placeholderGrey,
-                    child: const Icon(Icons.image, color: AppColors.greyCol),
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              color: AppColors.placeholderGrey,
+              child: const Icon(Icons.image, color: AppColors.greyCol),
+            ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: GestureDetector(
+                onTap: () => _pickAndUploadPhoto(product),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBlue,
+                    shape: BoxShape.circle,
                   ),
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: GestureDetector(
-                      onTap: () => _pickAndUploadPhoto(product),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryBlue,
-                          shape: BoxShape.circle,
-                        ),
-                        padding: const EdgeInsets.all(4),
-                        child: const Icon(Icons.add, color: Colors.white, size: 20),
-                      ),
-                    ),
-                  ),
-                ],
+                  padding: const EdgeInsets.all(4),
+                  child: const Icon(Icons.add, color: Colors.white, size: 20),
+                ),
               ),
+            ),
+          ],
+        ),
         title: Text(
           'Product Name: ${product.name}',
-          style: AppTextStyles.label,
+          style: TextStyle(
+            fontFamily: 'LibreBaskerville',
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: _themeManager.isDarkMode ? Colors.white : Colors.black,
+          ),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
