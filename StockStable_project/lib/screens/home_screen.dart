@@ -64,13 +64,15 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: _themeManager.backgroundColor,
       drawer: const CustomDrawer(),
       appBar: AppBar(
+        title: const Text(
+          "StockStable",
+          style: AppTextStyles.appBarText,
+        ),
+        centerTitle: true,
         backgroundColor: AppColors.primaryBlue,
-        title: SizedBox(
-          height: 40,
-          child: TextField(
-            style: AppTextStyles.label.copyWith(
-              color: _themeManager.primaryTextColor,
-            ),
+
+
+            /*
             decoration: InputDecoration(
               filled: true,
               fillColor: _themeManager.isDarkMode ? Color(0xFF353535) : Colors.white,
@@ -87,8 +89,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: _themeManager.isDarkMode ? Colors.grey[400] : Colors.grey,
               ),
             ),
-          ),
-        ),
+            ),
+            */
+
+
       ),
       body: SingleChildScrollView(
         padding: AppPadding.all16,
@@ -211,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(width: 8),
           Expanded(
             child: ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, '/inventory'),
+              onPressed: () => Navigator.pushNamed(context, '/delete'),
               style: ElevatedButton.styleFrom(
                 padding: AppPadding.vertical12,
                 shape: const StadiumBorder(),

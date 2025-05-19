@@ -290,16 +290,7 @@ class InventoryScreenState extends State<InventoryScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    _deleteProduct(product.id);
-                  },
-                  icon: const Icon(Icons.delete, size: 16),
-                  label: const Text('Delete', style: AppTextStyles.smallButtonWhiteText),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.deleteRed,
-                  ),
-                ),
+
                 const SizedBox(width: 8),
                 ElevatedButton.icon(
                   onPressed: () {

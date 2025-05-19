@@ -20,6 +20,7 @@ import 'screens/settings_screen.dart';
 import 'providers/order_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/product_provider.dart';
+import 'screens/delete_product_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -97,6 +98,7 @@ class _StockStableAppState extends State<StockStableApp> {
         '/barcodeScanner': (context) => const BarcodeScannerScreen(),
         '/addItem': (context) => const AddItemScreen(),
         '/inventory': (context) => const InventoryScreen(),
+        '/delete':(context) => const deleteScreen(),
         '/orderHistory': (context) => const OrderHistoryScreen(),
         '/help': (context) => const HelpScreen(),
         '/settings': (context) => const SettingsScreen(),

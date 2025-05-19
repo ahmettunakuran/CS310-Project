@@ -19,7 +19,7 @@ class CustomDrawer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Home icon (clickable)
-            Padding(
+            /*Padding(
               padding: AppPadding.all16,
               child: GestureDetector(
                 onTap: () {
@@ -28,6 +28,8 @@ class CustomDrawer extends StatelessWidget {
                 child: Icon(Icons.home, size: 40, color: AppColors.primaryBlue),
               ),
             ),
+            */
+
 
             const SizedBox(height: 20),
 
