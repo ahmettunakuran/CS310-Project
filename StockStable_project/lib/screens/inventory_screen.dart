@@ -86,9 +86,15 @@ class InventoryScreenState extends State<InventoryScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: Text(product.name, style: AppTextStyles.label),
-        content: Text(
-          "Amount: ${product.amount}\nPrice: ₺${product.price}",
-          style: AppTextStyles.hint,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (product.category != null && product.category!.isNotEmpty)
+              Text("Category: ${product.category}", style: AppTextStyles.hint),
+            Text("Amount: ${product.amount}", style: AppTextStyles.hint),
+            Text("Price: ₺${product.price}", style: AppTextStyles.hint),
+          ],
         ),
         actions: [
           TextButton(

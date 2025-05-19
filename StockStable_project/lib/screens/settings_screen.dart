@@ -24,10 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _selectedLanguage = 'English';
   final List<String> _languages = [
     'English',
-    'Turkish',
-    'Spanish',
-    'French',
-    'German'
+
   ];
   final ThemeManager _themeManager = ThemeManager();
   final FirebaseAuth _auth = FirebaseAuth.instance;
