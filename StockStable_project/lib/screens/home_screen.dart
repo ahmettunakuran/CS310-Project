@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Stream<QuerySnapshot> _getUserOutOfStockProducts() {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) throw Exception('User not logged in');
+    if (user == null) return const Stream.empty();
     return FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Stream<QuerySnapshot> _getUserProducts() {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) throw Exception('User not logged in');
+    if (user == null) return const Stream.empty();
     return FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
@@ -71,8 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         backgroundColor: AppColors.primaryBlue,
 
-
-            /*
+        /*
             decoration: InputDecoration(
               filled: true,
               fillColor: _themeManager.isDarkMode ? Color(0xFF353535) : Colors.white,
@@ -91,8 +90,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ),
             */
-
-
       ),
       body: SingleChildScrollView(
         padding: AppPadding.all16,
@@ -105,13 +102,15 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 20),
             _buildSectionHeader(
               title: 'Out Of Stock',
-              onViewAllPressed: () => Navigator.pushNamed(context, '/outOfStock'),
+              onViewAllPressed: () =>
+                  Navigator.pushNamed(context, '/outOfStock'),
             ),
             _buildProductList(_getUserOutOfStockProducts()),
             const SizedBox(height: 20),
             _buildSectionHeader(
               title: 'Stock Information',
-              onViewAllPressed: () => Navigator.pushNamed(context, '/stockInfo'),
+              onViewAllPressed: () =>
+                  Navigator.pushNamed(context, '/stockInfo'),
             ),
             _buildProductList(_getUserProducts()),
           ],
@@ -125,13 +124,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return const SizedBox.shrink();
   }
 
-  Widget _buildSectionHeader({required String title, required VoidCallback onViewAllPressed}) {
+  Widget _buildSectionHeader(
+      {required String title, required VoidCallback onViewAllPressed}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           title,
-          style: AppTextStyles.label.copyWith(color: _themeManager.primaryTextColor),
+          style: AppTextStyles.label
+              .copyWith(color: _themeManager.primaryTextColor),
         ),
         TextButton(
           onPressed: onViewAllPressed,
@@ -195,13 +196,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 shape: const StadiumBorder(),
                 backgroundColor: AppColors.primaryBlue,
               ),
-              child: const Text('Add Item', style: AppTextStyles.smallButtonWhiteText),
+              child: const Text('Add Item',
+                  style: AppTextStyles.smallButtonWhiteText),
             ),
           ),
           const SizedBox(width: 8),
           FloatingActionButton(
             onPressed: () async {
-              final result = await Navigator.pushNamed(context, '/barcodeScanner');
+              final result =
+                  await Navigator.pushNamed(context, '/barcodeScanner');
               if (result != null && result is String) {
                 debugPrint("Taranan QR Kod: $result");
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -221,7 +224,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 shape: const StadiumBorder(),
                 backgroundColor: AppColors.deleteRed,
               ),
-              child: const Text('Delete Item', style: AppTextStyles.smallButtonWhiteText),
+              child: const Text('Delete Item',
+                  style: AppTextStyles.smallButtonWhiteText),
             ),
           ),
         ],
